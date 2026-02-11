@@ -1,0 +1,398 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.24.24.22086",
+      "templateHash": "18015913200819891833"
+    }
+  },
+  "parameters": {
+    "virtualMachineSize": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "deployOrBuild": {
+      "type": "string"
+    },
+    "resourceGroupName": {
+      "type": "string"
+    },
+    "privateIPAddress": {
+      "type": "string"
+    },
+    "rootDomainControllerPrivateIp": {
+      "type": "string"
+    },
+    "virtualMachineHostname": {
+      "type": "string"
+    },
+    "imageReference": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "osDiskType": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "localAdminUsername": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "localAdminPassword": {
+      "type": "securestring",
+      "defaultValue": ""
+    },
+    "enterpriseAdminUsername": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "enterpriseAdminPassword": {
+      "type": "securestring",
+      "defaultValue": ""
+    },
+    "domainName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "domainAndEnterpriseAdminUsername": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "oldScenarios": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "jumpboxPrivateIPAddress": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "connectedPrivateIPAddress": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "isVNet10Required": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "isVNet172Required": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "isVNet192Required": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "hasPublicIP": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "callerIPAddress": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "skipPeering": {
+      "type": "bool",
+      "defaultValue": false
+    }
+  },
+  "variables": {
+    "$fxv#0": "\r\nparam(\r\n    [string]$targetFiles\r\n)\r\n\r\n$logFilePath = \"C:\\Temp\\logfile.txt\"\r\n\r\n# pass a comma-delimited string and split it\r\n$targetFilesArray = $targetFiles -split \",\"\r\n\r\nforeach ($file in $targetFilesArray)\r\n{\r\n    switch ($file)\r\n    {\r\n        'module'\r\n        {\r\n            Install-WindowsFeature -Name RSAT-AD-PowerShell\r\n            $localFilePath = \"C:\\Temp\\ADVulnEnvModule\"\r\n            $fileName = \"C:\\Temp\\ADVulnEnvModule\\ADVulnEnvModule.psm1\"\r\n\r\n            # Create directory if it doesn't exist\r\n            New-Item -ItemType Directory -Path $localFilePath -Force | Out-Null\r\n\r\n            Add-Content -Path $logFilePath -Value \"=== EMBEDDED SETUP STARTED ===\"\r\n            Add-Content -Path $logFilePath -Value \"Writing embedded module content to $fileName\"\r\n\r\n            # Module content embedded directly in script (will be replaced by bicep)\r\n            $moduleContent = @'\r\n__MODULE_CONTENT_PLACEHOLDER__\r\n'@\r\n\r\n            Add-Content -Path $logFilePath -Value \"Module content size: $($moduleContent.Length) characters\"\r\n\r\n            # Write the embedded module content to file\r\n            try {\r\n                [System.IO.File]::WriteAllText($fileName, $moduleContent, [System.Text.Encoding]::UTF8)\r\n                Add-Content -Path $logFilePath -Value \"Module content written to $fileName\"\r\n\r\n                # Verify file was created\r\n                if (Test-Path $fileName) {\r\n                    $fileSize = (Get-Item $fileName).Length\r\n                    Add-Content -Path $logFilePath -Value \"Module file verified: $fileSize bytes\"\r\n                } else {\r\n                    Add-Content -Path $logFilePath -Value \"ERROR: Module file was not created at $fileName\"\r\n                }\r\n            }\r\n            catch {\r\n                Add-Content -Path $logFilePath -Value \"ERROR writing module file: $_\"\r\n                Add-Content -Path $logFilePath -Value \"Exception type: $($_.Exception.GetType().FullName)\"\r\n                Add-Content -Path $logFilePath -Value \"Exception message: $($_.Exception.Message)\"\r\n            }\r\n        }\r\n        'esc'\r\n        {\r\n            # Create ADCS files directory\r\n            $adcsPath = \"C:\\Temp\\adcs-files\"\r\n            New-Item -ItemType Directory -Path $adcsPath -Force | Out-Null\r\n            Add-Content -Path $logFilePath -Value \"=== ESC FILES SETUP STARTED ===\"\r\n\r\n            # ESC file contents embedded directly in script (will be replaced by bicep)\r\n            $esc1Vuln = @'\r\n__ESC1_VULN_PLACEHOLDER__\r\n'@\r\n            $esc1VulnSecurityDescriptor = @'\r\n__ESC1_VULN_SD_PLACEHOLDER__\r\n'@\r\n            $esc3VulnAuthSignatures = @'\r\n__ESC3_AUTH_SIG_PLACEHOLDER__\r\n'@\r\n            $esc3VulnRequestAgentSecurityDescriptor = @'\r\n__ESC3_REQ_AGENT_SD_PLACEHOLDER__\r\n'@\r\n            $esc4VulnWrite = @'\r\n__ESC4_VULN_PLACEHOLDER__\r\n'@\r\n            $esc3VulnRequestAgent = @'\r\n__ESC3_REQ_AGENT_PLACEHOLDER__\r\n'@\r\n            $esc3VulnAuthSignaturesSecurityDescriptor = @'\r\n__ESC3_AUTH_SIG_SD_PLACEHOLDER__\r\n'@\r\n            $esc4VulnWriteSecurityDescriptor = @'\r\n__ESC4_VULN_SD_PLACEHOLDER__\r\n'@\r\n\r\n            # Write each ESC .ldf file from embedded content\r\n            $esc1Vuln | Set-Content -Path \"$adcsPath\\ESC1Vuln.ldf\" -Force\r\n            $esc1VulnSecurityDescriptor | Set-Content -Path \"$adcsPath\\ESC1VulnSecurityDescriptor.ldf\" -Force\r\n            $esc3VulnAuthSignatures | Set-Content -Path \"$adcsPath\\ESC3VulnAuthSignatures.ldf\" -Force\r\n            $esc3VulnRequestAgentSecurityDescriptor | Set-Content -Path \"$adcsPath\\ESC3VulnRequestAgentSecurityDescriptor.ldf\" -Force\r\n            $esc4VulnWrite | Set-Content -Path \"$adcsPath\\ESC4VulnWrite.ldf\" -Force\r\n            $esc3VulnRequestAgent | Set-Content -Path \"$adcsPath\\ESC3VulnRequestAgent.ldf\" -Force\r\n            $esc3VulnAuthSignaturesSecurityDescriptor | Set-Content -Path \"$adcsPath\\ESC3VulnAuthSignaturesSecurityDescriptor.ldf\" -Force\r\n            $esc4VulnWriteSecurityDescriptor | Set-Content -Path \"$adcsPath\\ESC4VulnWriteSecurityDescriptor.ldf\" -Force\r\n\r\n            Add-Content -Path $logFilePath -Value \"Successfully wrote 8 ADCS template files to $adcsPath\"\r\n        }\r\n        Default\r\n        {\r\n            Add-Content -Path $logFilePath -Value \"Error: Unknown target file type '$file'\"\r\n        }\r\n    }\r\n}\r\n",
+    "$fxv#1": "<# =============================\r\n          Creation Functions\r\n    ============================#>\r\n\r\n\r\nFunction GenerateUsers {\r\n    param (\r\n        [pscredential]$DomainAdminCreds,\r\n        [string]$domainName\r\n    )\r\n\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n\r\n    # Define an array of 25 names\r\n    $userNames = @(\"User1\", \"User2\", \"User3\", \"User4\", \"User5\",\r\n                   \"User6\", \"User7\", \"User8\", \"User9\", \"User10\",\r\n                   \"User11\", \"User12\", \"User13\", \"User14\", \"User15\",\r\n                   \"User16\", \"User17\", \"User18\", \"User19\", \"User20\",\r\n                   \"User21\", \"User22\", \"User23\", \"User24\", \"EntryUser\")\r\n\r\n    # Loop through each name and create a user\r\n    foreach ($name in $userNames) {\r\n        try {\r\n            Add-Type -AssemblyName System.Web\r\n    \r\n            # Assign specific simple passwords for User8(Kerberoast User) and EntryUser\r\n            if ($name -eq \"User8\") {\r\n                $password = \"Password123\"\r\n            } elseif ($name -eq \"EntryUser\" -or $name -eq \"User2\") { # Assign simple passwords for entryuser(user to login with and user2 for responder attack)\r\n                $password = \"Password#1\"\r\n            } else {\r\n                # Generate a random password for other users\r\n                $password = [System.Web.Security.Membership]::GeneratePassword(25, 1)\r\n            }\r\n    \r\n            $description = 'Inspired by secframe.com/badblood.'\r\n            $upn = \"$name@$domainName\"\r\n    \r\n            # Create the user with New-ADUser using the provided credentials\r\n            New-ADUser -Name $name -SamAccountName $name -Surname $name -Enabled $true -AccountPassword (ConvertTo-SecureString $password -AsPlainText -Force) -UserPrincipalName $upn -Description $description -Credential $DomainAdminCreds\r\n    \r\n            # Add successful execution in logs\r\n            $successMessage = \"GenerateUsers Function: Successfully created user: $name\"\r\n            Add-Content -Path $logFilePath -Value $successMessage\r\n            Write-Output $successMessage\r\n\r\n            # Add EntryUser and User2 to rdp group (entryuser to be utilize to rdp into domain and User2 used to similate traffic for responder attack)\r\n            if ($name -eq \"EntryUser\") {\r\n                # Add to domain Remote Desktop Users group (DCs don't have local groups)\r\n                Add-ADGroupMember -Identity \"Remote Desktop Users\" -Members $name -Credential $DomainAdminCreds\r\n                $rdpMessage = \"GenerateUsers Function: Added $name to Remote Desktop Users domain group\"\r\n                Add-Content -Path $logFilePath -Value $rdpMessage\r\n                Write-Output $rdpMessage\r\n            }\r\n        } catch {\r\n            # Add failed execution in logs\r\n            Add-Content -Path $logFilePath -Value \"GenerateUsers Function: Error in running function and creating user $name : $_ \"\r\n        }\r\n    }\r\n}\r\n\r\n\r\n\r\n\r\nFunction GenerateRandomUsers {\r\n    param (\r\n        [pscredential]$DomainAdminCreds,\r\n        [string]$domainName,\r\n        [int]$numberOfUsers\r\n    )\r\n\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n\r\n    # Read names from the file\r\n    $fileURL = \"https://raw.githubusercontent.com/davidprowe/BadBlood/master/AD_Users_Create/Names/names.txt\"\r\n    $namesFilePath = \"C:\\temp\\names.txt\"\r\n    Invoke-WebRequest -Uri $fileURL -OutFile $namesFilePath\r\n    if (-Not (Test-Path $namesFilePath)) {\r\n        Write-Error \"Names file not found at $namesFilePath\"\r\n        return\r\n    }\r\n\r\n    $allNames = Get-Content $namesFilePath\r\n\r\n    # Check if there are enough names in the file\r\n    if ($numberOfUsers -gt $allNames.Count) {\r\n        Write-Error \"Not enough names in the file to create $numberOfUsers users.\"\r\n        return\r\n    }\r\n\r\n    # Select random names from the list\r\n    $randomNames = Get-Random -InputObject $allNames -Count $numberOfUsers\r\n\r\n    # Loop through each random name and create a user\r\n    foreach ($name in $randomNames) {\r\n        try {\r\n            Add-Type -AssemblyName System.Web\r\n\r\n            # Generate a random password for the user\r\n            $password = [System.Web.Security.Membership]::GeneratePassword(25, 1)\r\n\r\n            $description = 'Inspired by secframe.com/badblood.'\r\n            $upn = \"$name@$domainName\"\r\n\r\n            # Create the user with New-ADUser using the provided credentials\r\n            New-ADUser -Name $name -SamAccountName $name -Surname $name -Enabled $true -AccountPassword (ConvertTo-SecureString $password -AsPlainText -Force) -UserPrincipalName $upn -Description $description -Credential $DomainAdminCreds\r\n\r\n            # Add successful execution in logs\r\n            $successMessage = \"GenerateRandomUsers Function: Successfully created user: $name\"\r\n            Add-Content -Path $logFilePath -Value $successMessage\r\n            Write-Output $successMessage\r\n        } catch {\r\n            # Add failed execution in logs\r\n            Add-Content -Path $logFilePath -Value \"GenerateRandomUsers Function: Error in running function and creating user $name : $_ \"\r\n        }\r\n    }\r\n}\r\nFunction CreateSingleUser {\r\n    param (\r\n        [pscredential]$DomainAdminCreds,\r\n        [string]$domainName,\r\n        [string]$singleUsername,\r\n        [string]$singleUserPassword\r\n    )\r\n\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n    $description = 'Single User Creation'\r\n    $upn = \"$singleUsername@$domainName\"\r\n    \r\n    try {\r\n        # Create the user with New-ADUser using the provided credentials\r\n        New-ADUser -Name $singleUsername -SamAccountName $singleUsername -Surname $singleUsername -Enabled $true -AccountPassword (ConvertTo-SecureString $singleUserPassword -AsPlainText -Force) -UserPrincipalName $upn -Description $description -Credential $DomainAdminCreds\r\n\r\n        # Add successful execution in logs\r\n        $successMessage = \"CreateSingleUser Function: Successfully created user: $singleUsername\"\r\n        Add-Content -Path $logFilePath -Value $successMessage\r\n        Write-Output $successMessage\r\n\r\n    }\r\n    catch {\r\n        # Add failed execution in logs\r\n        Add-Content -Path $logFilePath -Value \"CreateSingleUser Function: Error in running function and creating user $singleUsername : $_ \"\r\n    }\r\n    \r\n}\r\n\r\nFunction ConfigureUserToRDP {\r\n    param (\r\n        [pscredential]$DomainAdminCreds,\r\n        [string]$domainName,\r\n        [string]$targetUser\r\n    )\r\n\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n    \r\n    try {\r\n        Add-Type -AssemblyName System.Web\r\n\r\n\r\n        Add-ADGroupMember -Identity \"Remote Desktop Users\" -Members $targetUser -Credential $DomainAdminCreds\r\n        Add-LocalGroupMember -Group \"Remote Desktop Users\" -Member $targetUser \r\n        Add-Content -Path $logFilePath -Value \"ConfigureUserToRDP Function: Added $targetUser to Remote Desktop Users group\"\r\n        \r\n    } catch {\r\n        # Add failed execution in logs\r\n        Add-Content -Path $logFilePath -Value \"ConfigureUserToRDP Function: Error in running function $targetUser : $_ \"\r\n    }\r\n}\r\n\r\nFunction CreateAndOrganizeOUs {\r\n    param (\r\n        [string]$OU1Name,\r\n        [string]$OU2Name,\r\n        [int]$NumberOfUsersInOU1,\r\n        [pscredential]$DomainAdminCreds\r\n    )\r\n\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n\r\n    try {\r\n        # Create the first OU\r\n        New-ADOrganizationalUnit -Name $OU1Name -Credential $DomainAdminCreds\r\n        Add-Content -Path $logFilePath -Value \"Created OU: $OU1Name\"\r\n\r\n        # Create the second OU\r\n        New-ADOrganizationalUnit -Name $OU2Name -Credential $DomainAdminCreds\r\n        Add-Content -Path $logFilePath -Value \"Created OU: $OU2Name\"\r\n\r\n        # Move users to the first OU\r\n        $users = Get-ADUser -Filter * -SearchBase \"CN=Users,DC=redteam,DC=lab\" | Select-Object -First $NumberOfUsersInOU1\r\n        foreach ($user in $users) {\r\n            Move-ADObject -Identity $user.DistinguishedName -TargetPath \"OU=$OU1Name,DC=redteam,DC=lab\"\r\n            Add-Content -Path $logFilePath -Value \"Moved user $($user.Name) to OU: $OU1Name\"\r\n        }\r\n\r\n        # Move the remaining users to the second OU\r\n        $remainingUsers = Get-ADUser -Filter * -SearchBase \"CN=Users,DC=redteam,DC=lab\" \r\n        foreach ($user in $remainingUsers) {\r\n            Move-ADObject -Identity $user.DistinguishedName -TargetPath \"OU=$OU2Name,DC=redteam,DC=lab\"\r\n            Add-Content -Path $logFilePath -Value \"Moved user $($user.Name) to OU: $OU2Name\"\r\n        }\r\n\r\n    } catch {\r\n        Add-Content -Path $logFilePath -Value \"Error in CreateAndOrganizeOUs: $_ \"\r\n    }\r\n}\r\n\r\nFunction CreateComputerObjects {\r\n    param (\r\n        [string]$TargetOU, # Optional: OU to place the computer objects\r\n        [pscredential]$DomainAdminCreds\r\n    )\r\n\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n\r\n    # Predefined list of computer names\r\n    $ComputerNames = @(\"Computer1\", \"Computer2\", \"Computer3\", \"Computer4\", \"Computer5\")\r\n\r\n    foreach ($name in $ComputerNames) {\r\n        try {\r\n            $params = @{\r\n                Name = $name\r\n                Credential = $DomainAdminCreds\r\n                Path = if ($TargetOU) { \"OU=$TargetOU,DC=redteam,DC=lab\" } else { \"CN=Computers,DC=redteam,DC=lab\" }\r\n            }\r\n\r\n            # Create the computer object\r\n            New-ADComputer @params\r\n\r\n            # Log success\r\n            Add-Content -Path $logFilePath -Value \"CreateComputerObjects: Successfully created computer object: $name\"\r\n        } catch {\r\n            # Log any errors\r\n            Add-Content -Path $logFilePath -Value \"CreateComputerObjects: Error creating computer object $name : $_ \"\r\n        }\r\n    }\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n<# =================================\r\n        Attack Vector Functions\r\n    ================================#>\r\n\r\nFunction Import-VulnerableCertificateTemplate {\r\n    param (\r\n        [string]$domainAdminUsername,\r\n        [string]$domainAdminPassword,\r\n        [string]$domainName,\r\n        [string]$templateName\r\n    )\r\n    $logLocation = \"C:\\Temp\\logfile.txt\"\r\n    try {\r\n        ldifde -i -k -f \"C:\\Temp\\adcs-files\\$templateName.ldf\" -b $domainAdminUsername $domainName $domainAdminPassword\r\n        ldifde -i -k -f $(\"C:\\Temp\\adcs-files\\\" + $templateName + \"SecurityDescriptor.ldf\") -b $domainAdminUsername $domainName $domainAdminPassword\r\n        Restart-Service -Name certsvc -Force\r\n    } catch {\r\n        Add-Content -Path $logLocation -Value \"Error Enabling $templateName : $_ \"\r\n    }\r\n}\r\n\r\nFunction Disable-PreAuth {\r\n    param (\r\n        [PSCredential]$domainAdminCreds,\r\n        [string]$targetUser\r\n    )\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n\r\n    try {\r\n        # Use the credentials for AD operations\r\n        Set-ADAccountControl -Credential $domainAdminCreds -Identity $targetUser -DoesNotRequirePreAuth:$true\r\n\r\n        # Add successfull execution in logs\r\n        Add-Content -Path $logFilePath -Value \"DisablePreAuth Function: Successfully disabled preauth for $targetUser\"\r\n    }\r\n    catch {\r\n        # Log any errors\r\n        Add-Content -Path $logFilePath -Value \"DisablePreAuth Function: Error running Disable-PreAuth: $_ \"\r\n    }\r\n}\r\n\r\nFunction Update-User-for-Kerberoast {\r\n    param (\r\n        [PSCredential]$domainAdminCreds,\r\n        [string]$targetUser,\r\n        [string]$domainName\r\n    )\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n\r\n    try {\r\n        # Generate unique SPN per user by including username in hostname\r\n        $uniqueSpn = \"MSSQLSvc/sql-$targetUser.$domainName:1433\"\r\n\r\n        # Use the credentials for AD operations\r\n        Set-ADUser -Credential $domainAdminCreds -Identity $targetUser -ServicePrincipalNames @{Add=$uniqueSpn}\r\n\r\n        # Add successfull execution in logs\r\n        Add-Content -Path $logFilePath -Value \"Update-User-for-Kerberoast Function: Made $targetUser be kerberoasted with SPN $uniqueSpn\"\r\n    }\r\n    catch {\r\n        # Log any errors\r\n        Add-Content -Path $logFilePath -Value \"Update-User-for-Kerberoast Function: Error running Update-User-for-Kerberoast: $_ \"\r\n    }\r\n}\r\n\r\nFunction Update-User-for-Constrained-Delegation {\r\n    param (\r\n        [PSCredential]$domainAdminCreds,\r\n        [string]$userForCDelegation,\r\n        [string]$dcName,\r\n        [string]$domainName\r\n    )\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n\r\n    try {\r\n        # Set the SPN for the DC\r\n        $spn = \"HTTP/$dcName.$domainName\"\r\n        Set-ADComputer -Credential $domainAdminCreds -Identity $dcName -ServicePrincipalNames @{ADD=$spn}\r\n        # Use the credentials for AD operations\r\n        Get-ADUser -Credential $domainAdminCreds -Identity $userForCDelegation | Set-ADAccountControl -TrustedToAuthForDelegation $true\r\n        Set-ADUser -Credential $domainAdminCreds -Identity $userForCDelegation -Add @{'msDS-AllowedToDelegateTo'=@($spn)}\r\n        \r\n        # Add successful execution in logs\r\n        Add-Content -Path $logFilePath -Value \"Update-User-for-Constrained-Delegation Function: Configured $userForCDelegation for constrained delegation with SPN $spn\"\r\n    }\r\n    catch {\r\n        # Log any errors\r\n        Add-Content -Path $logFilePath -Value \"Update-User-for-Constrained-Delegation Function: Error running Update-User-for-Constrained-Delegation: $_ \"\r\n    }\r\n}\r\n\r\nFunction Update-Computer-for-Constrained-Delegation {\r\n    param (\r\n        [PSCredential]$domainAdminCreds,\r\n        [string]$computerForCDelegation,\r\n        [string]$dcName,\r\n        [string]$domainName\r\n    )\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n    try {\r\n        # Set the SPN for the DC\r\n        $spn = \"HTTP/$dcName.$domainName\"\r\n        #Add spn onto DC\r\n        Set-ADComputer -Credential $domainAdminCreds -Identity $dcName -ServicePrincipalNames @{ADD=$spn}\r\n        # set target computer to be able to delegate\r\n        Get-ADComputer -Credential $domainAdminCreds -Identity $computerForCDelegation | Set-ADAccountControl -TrustedToAuthForDelegation $true\r\n        Set-ADComputer -Credential $domainAdminCreds -Identity $computerForCDelegation -Add @{'msDS-AllowedToDelegateTo'=@($spn)}\r\n        \r\n        # Add successful execution in logs\r\n        Add-Content -Path $logFilePath -Value \"Update-Computer-for-Constrained-Delegation Function: Configured $computerForCDelegation for constrained delegation with SPN $spn\"\r\n    }\r\n    catch {\r\n        # Log any errors\r\n        Add-Content -Path $logFilePath -Value \"Update-Computer-for-Constrained-Delegation Function: Error running Update-Computer-for-Constrained-Delegation: $_ \"\r\n    }\r\n}\r\n\r\n\r\nFunction Set-ADUserPermissions {\r\n    param (\r\n        [string]$GrantingUser,\r\n        [string]$ReceivingUser,\r\n        [string]$PermissionType\r\n    )\r\n\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n    \r\n    try {\r\n        # Get the AD user object for the receiving user\r\n        $user = Get-ADUser -Identity $ReceivingUser\r\n\r\n        # Define the type of access right based on the PermissionType string\r\n        $accessRight = @{\r\n            \"GenericAll\" = [System.DirectoryServices.ActiveDirectoryRights]::GenericAll\r\n            \"GenericWrite\" = [System.DirectoryServices.ActiveDirectoryRights]::WriteProperty\r\n        }\r\n\r\n        # Create an Access Control Entry (ACE)\r\n        $ace = New-Object System.DirectoryServices.ActiveDirectoryAccessRule(\r\n            (New-Object System.Security.Principal.NTAccount($GrantingUser)),\r\n            $accessRight[$PermissionType],\r\n            'Allow'\r\n        )\r\n\r\n        # Get the current ACL for the user\r\n        $acl = Get-Acl \"AD:$($user.DistinguishedName)\"\r\n\r\n        # Add the new ACE to the ACL\r\n        $acl.AddAccessRule($ace)\r\n\r\n        # Set the new ACL on the user object\r\n        Set-Acl \"AD:$($user.DistinguishedName)\" $acl\r\n\r\n        # Log success\r\n        Add-Content -Path $logFilePath -Value \"Set-ADUserPermissions: Successfully set $PermissionType permission for $GrantingUser on $ReceivingUser\"\r\n    } catch {\r\n        # Log any errors\r\n        Add-Content -Path $logFilePath -Value \"Set-ADUserPermissions: Error setting permissions for $GrantingUser on $ReceivingUser : $_ \"\r\n    }\r\n}\r\n\r\nFunction SimulateUserTrafficAsUser2 {\r\n    param (\r\n        [string]$BogusSharePath,\r\n        [int]$IntervalSeconds\r\n    )\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n\r\n    # User2's credentials\r\n    $user2Username = \"redteam.lab\\User2\"\r\n    $user2Password = ConvertTo-SecureString \"Password#1\" -AsPlainText -Force\r\n    $user2Creds = New-Object System.Management.Automation.PSCredential ($user2Username, $user2Password)\r\n\r\n    # Script block to simulate traffic\r\n    $scriptBlock = {\r\n        param($BogusSharePath, $logFilePath, $IntervalSeconds)\r\n        while ($true) {\r\n            try {\r\n                # Attempt to access the bogus file share\r\n                & cmd.exe /c dir $BogusSharePath\r\n\r\n                # Log the attempt\r\n                Add-Content -Path $logFilePath -Value \"SimulateUserTraffic: Attempted to access $BogusSharePath\"\r\n            } catch {\r\n                # Log any errors from the attempt\r\n                Add-Content -Path $logFilePath -Value \"SimulateUserTraffic: Error accessing $BogusSharePath : $_ \"\r\n            }\r\n\r\n            # Wait for the specified interval\r\n            Start-Sleep -Seconds $IntervalSeconds\r\n        }\r\n    }\r\n\r\n    # Start the script block as a background job\r\n    Start-Job -ScriptBlock $scriptBlock -ArgumentList $BogusSharePath, $logFilePath, $IntervalSeconds -Credential $user2Creds\r\n}\r\n\r\nFunction Set-LocalPrivEsc-BinPathWriteAccess {\r\n    param (\r\n        [PSCredential]$domainAdminCreds,\r\n        [string]$targetUser,\r\n        [string]$domainName\r\n    )\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n    # Specify the service you're targeting\r\n    $service = \"wuauserv\"\r\n    $domainUser = \"$domainName\\$targetUser\"\r\n    # File for acl updates\r\n    $downloadUrl =  \"http://web.archive.org/web/20190910062448if_/http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi\"\r\n    $localPath = \"C:\\Temp\\subinacl.msi\"  \r\n    try {\r\n        # Download subinacl.msi\r\n        Invoke-WebRequest -Uri $downloadUrl -OutFile $localPath  \r\n        # Install it silently to prevent gui\r\n        Start-Process \"msiexec.exe\" -ArgumentList \"/i $localPath /qn /norestart\" -NoNewWindow -Wait  \r\n        $subinaclPath = \"C:\\Program Files (x86)\\Windows Resource Kits\\Tools\\subinacl.exe\"  \r\n        # Grant targetuser full permissions on bin\r\n        & $subinaclPath /service $service /grant=$domainUser=F\r\n        # Log success\r\n        Add-Content -Path $logFilePath -Value \"Grant-ServiceBinPathWriteAccess: Successfully granted write access to binPath of $service for $targetUser.\"\r\n    }\r\n    catch {\r\n        # Log any errors\r\n        Add-Content -Path $logFilePath -Value \"Grant-ServiceBinPathWriteAccess: Error granting write access to binPath of $service for $targetUser : $_\"\r\n    }\r\n}\r\n\r\n\r\nFunction Set-UnquotedServicePathVulnerability {\r\n    param (\r\n        [PSCredential]$domainAdminCreds,\r\n        [string]$targetUser,\r\n        [string]$vulnerablePath = \"C:\\Program Files\\My Vulnerable App\"\r\n    )\r\n\r\n    # Define the benign executable and service details\r\n    $benignExecutable = \"C:\\Windows\\System32\\notepad.exe\" # Example benign executable\r\n    $serviceName = \"BenignService\"\r\n    $serviceDisplayName = \"Benign Service\"\r\n    $servicePath = \"$vulnerablePath\\service.exe\" # Construct the service path with spaces\r\n\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\unquotedServicePathVulnerabilityLog.txt\"\r\n\r\n    try {\r\n        # Ensure the vulnerable directory path exists\r\n        New-Item -ItemType Directory -Path $vulnerablePath -Force\r\n\r\n        # Copy the benign executable to the service path (simulating a service installation)\r\n        Copy-Item -Path $benignExecutable -Destination $servicePath -Force\r\n\r\n        # Create the new service using sc.exe to bypass PowerShell cmdlet limitations on path quoting\r\n        $scArgs = \"create $serviceName binPath= `\"$servicePath`\" DisplayName= `\"$serviceDisplayName`\"\"\r\n        $scCreateResult = Start-Process sc.exe -ArgumentList $scArgs -Wait -PassThru -NoNewWindow\r\n\r\n        # Verify service creation was successful\r\n        if ($scCreateResult.ExitCode -eq 0) {\r\n            Add-Content -Path $logFilePath -Value \"Create-UnquotedServicePathVulnerability: Service '$serviceName' created successfully.\"\r\n        } else {\r\n            throw \"Failed to create service. Exit Code: $($scCreateResult.ExitCode)\"\r\n        }\r\n\r\n        # Grant write access to the target user for the vulnerable part of the path\r\n        $acl = Get-Acl $vulnerablePath\r\n        $permission = \"$targetUser\",\"Modify\",\"Allow\"\r\n        $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission\r\n        $acl.AddAccessRule($accessRule)\r\n        Set-Acl -Path $vulnerablePath -AclObject $acl\r\n\r\n        Add-Content -Path $logFilePath -Value \"Create-UnquotedServicePathVulnerability: Granted Modify access to '$targetUser' on '$vulnerablePath'.\"\r\n    }\r\n    catch {\r\n        Add-Content -Path $logFilePath -Value \"Create-UnquotedServicePathVulnerability: Error encountered: $_ \"\r\n    }\r\n}\r\n\r\n\r\n<#\r\nFunction Set-DomainAdminStoredCreds {\r\n    param (\r\n        [PSCredential]$domainAdminCreds,\r\n        [string]$targetUser,\r\n        [string]$domainName\r\n    )\r\n\r\n    # Generate a simple password for the target user\r\n    $newPassword = \"Password123!\"\r\n\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\domainAdminStoredCredsLog.txt\"\r\n\r\n    try {\r\n        # Change the password of the target user\r\n        Set-ADAccountPassword -Identity $targetUser -NewPassword (ConvertTo-SecureString $newPassword -AsPlainText -Force) -Credential $domainAdminCreds\r\n\r\n        # Extract domain admin credentials\r\n        $domainAdminUser = $domainAdminCreds.UserName\r\n        $domainAdminPassword = $domainAdminCreds.GetNetworkCredential().Password\r\n\r\n        # Use cmdkey to add stored credentials\r\n        $targetUserFQDN = \"$domainName\\$targetUser\"\r\n\r\n        Start-Process -FilePath \"cmdkey\" -ArgumentList \"/generic:$targetUserFQDN /user:$targetUserFQDN /pass:$newPassword\" -Credential $adminCreds -NoNewWindow -Wait\r\n\r\n        # Logging the action\r\n        Add-Content -Path $logFilePath -Value \"Set-DomainAdminStoredCreds: Successfully changed password and added stored credentials for '$targetUser'.\"\r\n    }\r\n    catch {\r\n        Add-Content -Path $logFilePath -Value \"Set-DomainAdminStoredCreds: Error encountered: $_ \"\r\n    }\r\n}\r\n#>\r\nFunction Add-CredsForMimikatz {\r\n    param (\r\n        [string]$userForMimikatz,\r\n        [string]$singleUserPassword,\r\n        [string]$domainName,\r\n        [string]$computerForMimikatz\r\n    )\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n    try {\r\n       # Need to add user to local admin group in order to be able to psremote in and provide creds.\r\n       #Add-LocalGroupMember -Group \"Administrators\" -Member $userForMimikatz\r\n \r\n       $username = \"$domainName\\$userForMimikatz\"\r\n       $password = ConvertTo-SecureString $singleUserPassword -AsPlainText -Force\r\n       $credential = New-Object System.Management.Automation.PSCredential ($username, $password)\r\n       Invoke-Command -Credential $credential -ComputerName $computerForMimikatz -ScriptBlock {Start-Process powershell.exe}\r\n       Add-Content -Path $logFilePath -Value \"Add-CredsForMimikatz: Configured $userForMimikatz to have hash within the targetbox\"\r\n    }\r\n    catch {\r\n        # Log any errors\r\n        Add-Content -Path $logFilePath -Value \"Add-CredsForMimikatz Function: Error running Add-CredsForMimikatz: $_ \"\r\n    }\r\n\r\n\r\n}\r\n\r\n\r\nFunction GenerateRandomCTF {\r\n    param (\r\n        [pscredential]$DomainAdminCreds,\r\n        [string]$domainName,\r\n        [string]$dcName,\r\n        [int]$numberOfUsers,\r\n        [string]$targetBox,\r\n        [string]$difficulty\r\n    )\r\n\r\n    # Define the log file path\r\n    $logFilePath = \"C:\\Temp\\logfile.txt\"\r\n\r\n    # Generate random users\r\n    GenerateRandomUsers -DomainAdminCreds $DomainAdminCreds -domainName $domainName -numberOfUsers $numberOfUsers\r\n\r\n    # Get all generated users\r\n    $randomUsers = Get-ADUser -Filter * | Select-Object -ExpandProperty SamAccountName\r\n\r\n    # Assign RDP permissions to a random user\r\n    $entryUser = Get-Random -InputObject $randomUsers\r\n    ConfigureUserToRDP -DomainAdminCreds $DomainAdminCreds -domainName $domainName -targetUser $entryUser\r\n    Set-ADAccountPassword -Identity $entryUser -NewPassword (ConvertTo-SecureString \"Password123\" -AsPlainText -Force) -Credential $DomainAdminCreds\r\n\r\n    # Determine attack count based on difficulty\r\n    $attackCount = switch ($difficulty) {\r\n        \"easy\" { 2 }\r\n        \"medium\" { 3 }\r\n        \"hard\" { 4 }\r\n        default { 2 }\r\n    }\r\n\r\n    # Define all attacks\r\n    $attacks = @(\r\n        \"Disable-PreAuth\", \r\n        \"Update-User-for-Kerberoast\", \r\n        \"Update-User-for-Constrained-Delegation\", \r\n        \"Update-Computer-for-Constrained-Delegation\", \r\n        \"Set-LocalPrivEsc-BinPathWriteAccess\", \r\n        \"Set-UnquotedServicePathVulnerability\", \r\n        \"Add-CredsForMimikatz\"\r\n    )\r\n\r\n    # Select the first attack\r\n    $firstAttackOptions = $attacks | Where-Object { $_ -in @(\"Set-LocalPrivEsc-BinPathWriteAccess\", \"Set-UnquotedServicePathVulnerability\", \"Disable-PreAuth\", \"Update-User-for-Kerberoast\") }\r\n    $firstAttack = Get-Random -InputObject $firstAttackOptions\r\n\r\n    # Remove first attack from remaining attacks\r\n    $remainingAttacks = $attacks | Where-Object { $_ -ne $firstAttack }\r\n\r\n    # Ensure the last attack leads to domain admin\r\n    $lastAttackOptions = @(\"Update-User-for-Constrained-Delegation\", \"Update-Computer-for-Constrained-Delegation\", \"Add-CredsForMimikatz\")\r\n    $lastAttack = Get-Random -InputObject $lastAttackOptions\r\n\r\n    # Adjust attack count to ensure it's valid\r\n    $countToSelect = [math]::Max($attackCount - 2, 0)\r\n    if ($countToSelect -gt 0) {\r\n        $selectedAttacks = @($firstAttack) + (Get-Random -InputObject $remainingAttacks -Count $countToSelect) + $lastAttack\r\n    } else {\r\n        $selectedAttacks = @($firstAttack, $lastAttack)\r\n    }\r\n\r\n    # Ensure Mimikatz or Update-Computer-for-Constrained-Delegation follows a priv esc attack and adjust selection if necessary\r\n    if ($selectedAttacks[-1] -in @(\"Add-CredsForMimikatz\", \"Update-Computer-for-Constrained-Delegation\") -and $firstAttack -notin @(\"Set-LocalPrivEsc-BinPathWriteAccess\", \"Set-UnquotedServicePathVulnerability\")) {\r\n        $firstAttack = Get-Random -InputObject @(\"Set-LocalPrivEsc-BinPathWriteAccess\", \"Set-UnquotedServicePathVulnerability\")\r\n        $selectedAttacks[0] = $firstAttack\r\n    }\r\n\r\n    # Initialize applied attacks array and previous user\r\n    $appliedAttacks = @()\r\n    $previousUser = $null\r\n\r\n    # Process attacks\r\n    foreach ($attack in $selectedAttacks) {\r\n        switch ($attack) {\r\n            \"Disable-PreAuth\" {\r\n                $user = Get-Random -InputObject ($randomUsers | Where-Object { $_ -ne $entryUser })\r\n                Disable-PreAuth -domainAdminCreds $DomainAdminCreds -targetUser $user\r\n                Set-ADAccountPassword -Identity $user -NewPassword (ConvertTo-SecureString \"Password123\" -AsPlainText -Force) -Credential $DomainAdminCreds\r\n                $appliedAttacks += \"Disable-PreAuth\"\r\n                $previousUser = $user\r\n            }\r\n            \"Update-User-for-Kerberoast\" {\r\n                $user = Get-Random -InputObject ($randomUsers | Where-Object { $_ -ne $entryUser })\r\n                Update-User-for-Kerberoast -domainAdminCreds $DomainAdminCreds -targetUser $user -domainName $domainName\r\n                Set-ADAccountPassword -Identity $user -NewPassword (ConvertTo-SecureString \"Password123\" -AsPlainText -Force) -Credential $DomainAdminCreds\r\n                $appliedAttacks += \"Update-User-for-Kerberoast\"\r\n                $previousUser = $user\r\n            }\r\n            \"Update-User-for-Constrained-Delegation\" {\r\n                if ($previousUser -ne $null -and $appliedAttacks -contains \"Disable-PreAuth\" -or $appliedAttacks -contains \"Update-User-for-Kerberoast\" -or $appliedAttacks -contains \"Add-CredsForMimikatz\") {\r\n                    Update-User-for-Constrained-Delegation -domainAdminCreds $DomainAdminCreds -userForCDelegation $previousUser -dcName $dcName -domainName $domainName\r\n                    $appliedAttacks += \"Update-User-for-Constrained-Delegation\"\r\n                }\r\n            }\r\n            \"Update-Computer-for-Constrained-Delegation\" {\r\n                if ($appliedAttacks -contains \"Set-LocalPrivEsc-BinPathWriteAccess\" -or $appliedAttacks -contains \"Set-UnquotedServicePathVulnerability\") {\r\n                    Update-Computer-for-Constrained-Delegation -domainAdminCreds $DomainAdminCreds -computerForCDelegation $targetBox -dcName $dcName -domainName $domainName\r\n                    $appliedAttacks += \"Update-Computer-for-Constrained-Delegation\"\r\n                }\r\n            }\r\n            \"Set-LocalPrivEsc-BinPathWriteAccess\" {\r\n                Set-LocalPrivEsc-BinPathWriteAccess -domainAdminCreds $DomainAdminCreds -targetUser $entryUser -domainName $domainName\r\n                $appliedAttacks += \"Set-LocalPrivEsc-BinPathWriteAccess\"\r\n            }\r\n            \"Set-UnquotedServicePathVulnerability\" {\r\n                Set-UnquotedServicePathVulnerability -domainAdminCreds $DomainAdminCreds -targetUser $entryUser\r\n                $appliedAttacks += \"Set-UnquotedServicePathVulnerability\"\r\n            }\r\n            \"Add-CredsForMimikatz\" {\r\n                if ($appliedAttacks -contains \"Set-LocalPrivEsc-BinPathWriteAccess\" -or $appliedAttacks -contains \"Set-UnquotedServicePathVulnerability\") {\r\n                    $mimikatzUser = Get-Random -InputObject ($randomUsers | Where-Object { $_ -ne $entryUser })\r\n                    Set-ADAccountPassword -Identity $mimikatzUser -NewPassword (ConvertTo-SecureString \"Password123\" -AsPlainText -Force) -Credential $DomainAdminCreds\r\n                    Add-CredsForMimikatz -userForMimikatz $mimikatzUser -singleUserPassword \"Password123\" -domainName $domainName -computerForMimikatz $targetBox\r\n                    $appliedAttacks += \"Add-CredsForMimikatz\"\r\n                    $previousUser = $mimikatzUser\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    # Log applied attacks\r\n    Add-Content -Path $logFilePath -Value \"GenerateRandomCTF: Successfully generated a random CTF with $($appliedAttacks.Count) attacks: $($appliedAttacks -join ', ')\"\r\n}\r\n\r\n\r\n\r\n",
+    "$fxv#10": "param(\n    [string]$domainName,                   # The FQDN of the domain to join (e.g., dev.build.lab or build.lab\n    [string]$domainAndEnterpriseAdminUsername,      # Domain admin user e.g., build\\admin\n    [string]$enterpriseAdminPassword                # Plain text password for domain join\n)\n\n\n[securestring]$enterpriseAdminPassword = ConvertTo-SecureString $enterpriseAdminPassword -AsPlainText -Force\n[pscredential]$enterpriseAdminCreds = New-Object System.Management.Automation.PSCredential ($domainAndEnterpriseAdminUsername, $enterpriseAdminPassword)\n\n\n$logFilePath = \"C:\\Temp\\logfile.txt\"\n# Sleep this to allow the domain controller time to initialize DNS \nAdd-Content -Path $logFilePath -Value \"Sleeping for 30 seconds to give the Domain Controller time to initialize DNS.\"\n#Start-Sleep -Seconds 30\n#Add-Content -Path $logFilePath -Value \"Woke up! Continuing...\"\n\n$joinedDomain = $false\n\nwhile (!$joinedDomain){\n\ttry {\n\t\tAdd-Computer -DomainName $domainName -Restart -Credential $enterpriseAdminCreds -Force\n\t\t$currentDomain = (Get-CimInstance Win32_ComputerSystem).Domain\n\t\tif ($currentDomain -eq $domainName){\n\t\t\t$joinedDomain = $true\n\t\t\tbreak\n\t\t} else {\n\t\t\tStart-Sleep -Seconds 30\n\t\t}\n\t} catch {\n\t\tAdd-Content -Path $logFilePath -Value \"Error joining the $domainName domain. $_\"\n\t\tStart-Sleep -Seconds 30\n\t}\n}\n",
+    "$fxv#11": "param(\n\t[string]$enterpriseAdminUsername,\n\t[string]$enterpriseAdminPassword\n)\n[securestring]$secureEnterpriseAdminPassword = ConvertTo-SecureString $enterpriseAdminPassword -AsPlainText -Force\n[pscredential]$enterpriseAdminCreds = New-Object System.Management.Automation.PSCredential ($enterpriseAdminUsername, $secureEnterpriseAdminPassword)\n\n$logFilePath = \"C:\\Temp\\logfile.txt\"\n\ntry {\n    Add-WindowsFeature Adcs-Cert-Authority -IncludeManagementTools\n    Install-AdcsCertificationAuthority -CAType EnterpriseRootCA -Credential $enterpriseAdminCreds -Force\n    Add-Content -Path $logFilePath -Value \"Successfully Installed ADCS.\"\n} catch {\n    Add-Content -Path $logFilePath -Value \"Failed Installing ADCS. $_\"\n}\ntry {\n    Install-WindowsFeature ADLDS -IncludeManagementTools\n    Add-Content -Path $logFilePath -Value \"Successfully Installed ADLDS.\"\n} catch {\n    Add-Content -Path $logFilePath -Value \"Failed installing ADLDS. $_\"\n}\n",
+    "$fxv#2": "dn: CN=ESC1Vuln,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=redteam,DC=lab\nchangetype: add\ncn: ESC1Vuln\ndisplayName: ESC1Vuln\ndistinguishedName: \n CN=ESC1Vuln,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Con\n figuration,DC=redteam,DC=lab\ndSCorePropagationData: 20240207204330.0Z\ndSCorePropagationData: 16010101000000.0Z\ndSCorePropagationData: 17130709023336.0Z\nflags: 131649\ninstanceType: 4\nmsPKI-Cert-Template-OID: \n 1.3.6.1.4.1.311.21.8.1958530.2366506.14305465.6392049.15594681.131.12125312.52\n 91900\nmsPKI-Certificate-Application-Policy: 1.3.6.1.5.5.7.3.2\nmsPKI-Certificate-Application-Policy: 1.3.6.1.5.5.7.3.1\nmsPKI-Certificate-Name-Flag: 1\nmsPKI-Enrollment-Flag: 0\nmsPKI-Minimal-Key-Size: 2048\nmsPKI-Private-Key-Flag: 16842752\nmsPKI-RA-Signature: 0\nmsPKI-Template-Minor-Revision: 5\nmsPKI-Template-Schema-Version: 2\nname: ESC1Vuln\nobjectCategory: \n CN=PKI-Certificate-Template,CN=Schema,CN=Configuration,DC=redteam,DC=lab\nobjectClass: top\nobjectClass: pKICertificateTemplate\npKICriticalExtensions: 2.5.29.15\npKIDefaultCSPs: 1,Microsoft RSA SChannel Cryptographic Provider\npKIDefaultCSPs: 2,Microsoft DH SChannel Cryptographic Provider\npKIDefaultKeySpec: 1\npKIExpirationPeriod:: AIByDl3C/f8=\npKIExtendedKeyUsage: 1.3.6.1.5.5.7.3.2\npKIExtendedKeyUsage: 1.3.6.1.5.5.7.3.1\npKIKeyUsage:: oAA=\npKIMaxIssuingDepth: 0\npKIOverlapPeriod:: AICmCv/e//8=\nrevision: 100\nshowInAdvancedViewOnly: TRUE\nuSNChanged: 45189\nuSNCreated: 45157\nwhenChanged: 20240207204332.0Z\nwhenCreated: 20240207203957.0Z\n\n",
+    "$fxv#3": "dn: CN=ESC1Vuln,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=redteam,DC=lab\nchangetype: modify\nreplace:nTSecurityDescriptor\nnTSecurityDescriptor:: \n AQAEjNgAAAD0AAAAAAAAABQAAAAEAMQABgAAAAUAKAAAAQAAAQAAAGjJEA77eNIRkNQAwE953FUBAQ\n AAAAAABQsAAAAAACQA/wEPAAEFAAAAAAAFFQAAAIVrTN0IKzmH3Rhi7QACAAAAABQAlAACAAEBAAAA\n AAAFCwAAAAAAFAD/AQ8AAQEAAAAAAAUSAAAAABIkAP8BDwABBQAAAAAABRUAAACFa0zdCCs5h90YYu\n 0HAgAAABIkAL0BDwABBQAAAAAABRUAAACFa0zdCCs5h90YYu0AAgAAAQUAAAAAAAUVAAAAhWtM3Qgr\n OYfdGGLtBwIAAAEFAAAAAAAFFQAAAIVrTN0IKzmH3Rhi7QcCAAA=\n-\n\n",
+    "$fxv#4": "dn: CN=ESC3VulnAuthSignatures,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=redteam,DC=lab\r\nchangetype: add\r\ncn: ESC3VulnAuthSignatures\r\ndisplayName: ESC3VulnAuthSignatures\r\ndistinguishedName: \r\n CN=ESC3VulnAuthSignatures,CN=Certificate Templates,CN=Public Key Servic\r\n es,CN=Services,CN=Configuration,DC=redteam,DC=lab\r\ndSCorePropagationData: 16010101000000.0Z\r\nflags: 131649\r\ninstanceType: 4\r\nmsPKI-Cert-Template-OID: \r\n 1.3.6.1.4.1.311.21.8.1958530.2366506.14305465.6392049.15594681.131.12906934.52\r\n 08534\r\nmsPKI-Certificate-Application-Policy: 1.3.6.1.5.5.7.3.2\r\nmsPKI-Certificate-Name-Flag: 33554432\r\nmsPKI-Enrollment-Flag: 32\r\nmsPKI-Minimal-Key-Size: 2048\r\nmsPKI-Private-Key-Flag: 16842752\r\nmsPKI-RA-Application-Policies: 1.3.6.1.4.1.311.20.2.1\r\nmsPKI-RA-Signature: 1\r\nmsPKI-Template-Minor-Revision: 6\r\nmsPKI-Template-Schema-Version: 2\r\nname: ESC3VulnAuthSignatures\r\nobjectCategory: \r\n CN=PKI-Certificate-Template,CN=Schema,CN=Configuration,DC=redteam,DC=lab\r\nobjectClass: top\r\nobjectClass: pKICertificateTemplate\r\npKICriticalExtensions: 2.5.29.15\r\npKICriticalExtensions: 2.5.29.7\r\npKIDefaultCSPs: 2,Microsoft DH SChannel Cryptographic Provider\r\npKIDefaultCSPs: 1,Microsoft RSA SChannel Cryptographic Provider\r\npKIDefaultKeySpec: 1\r\npKIExpirationPeriod:: AIByDl3C/f8=\r\npKIExtendedKeyUsage: 1.3.6.1.5.5.7.3.2\r\npKIKeyUsage:: oAA=\r\npKIMaxIssuingDepth: 0\r\npKIOverlapPeriod:: AICmCv/e//8=\r\nrevision: 100\r\nshowInAdvancedViewOnly: TRUE\r\nuSNChanged: 45209\r\nuSNCreated: 45207\r\nwhenChanged: 20240213221056.0Z\r\nwhenCreated: 20240213221055.0Z\r\n\r\n",
+    "$fxv#5": "dn: CN=ESC3VulnRequestAgent,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=redteam,DC=lab\r\nchangetype: modify\r\nreplace:nTSecurityDescriptor\r\nnTSecurityDescriptor:: \r\n AQAEnDQBAABQAQAAAAAAABQAAAAEACABBwAAAAUAOAAwAQAAAQAAAGjJEA77eNIRkNQAwE953FUBBQ\r\n AAAAAABRUAAACFa0zdCCs5h90YYu0AAgAABQA4ADABAAABAAAAaMkQDvt40hGQ1ADAT3ncVQEFAAAA\r\n AAAFFQAAAIVrTN0IKzmH3Rhi7QcCAAAFACgAAAEAAAEAAABoyRAO+3jSEZDUAMBPedxVAQEAAAAAAA\r\n ULAAAAAAAkAP8ADwABBQAAAAAABRUAAACFa0zdCCs5h90YYu0AAgAAAAAkAP8ADwABBQAAAAAABRUA\r\n AACFa0zdCCs5h90YYu0HAgAAAAAkAP8ADwABBQAAAAAABRUAAACFa0zdCCs5h90YYu1PBAAAAAAUAJ\r\n QAAgABAQAAAAAABQsAAAABBQAAAAAABRUAAACFa0zdCCs5h90YYu1PBAAAAQUAAAAAAAUVAAAAhWtM\r\n 3QgrOYfdGGLtBwIAAA==\r\n-\r\n",
+    "$fxv#6": "dn: CN=ESC4VulnWrite,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=redteam,DC=lab\r\nchangetype: add\r\ncn: ESC4VulnWrite\r\ndisplayName: ESC4VulnWrite\r\ndistinguishedName: \r\n CN=ESC4VulnWrite,CN=Certificate Templates,CN=Public Key Services,CN=Services,C\r\n N=Configuration,DC=redteam,DC=lab\r\ndSCorePropagationData: 20240214220029.0Z\r\ndSCorePropagationData: 16010101000000.0Z\r\nflags: 0\r\ninstanceType: 4\r\nmsPKI-Cert-Template-OID: \r\n 1.3.6.1.4.1.311.21.8.7095186.10767367.6704308.10313546.8444657.192.8811968.127\r\n 77348\r\nmsPKI-Certificate-Name-Flag: 1\r\nmsPKI-Enrollment-Flag: 0\r\nmsPKI-Minimal-Key-Size: 2048\r\nmsPKI-Private-Key-Flag: 16842768\r\nmsPKI-RA-Signature: 0\r\nmsPKI-Template-Minor-Revision: 5\r\nmsPKI-Template-Schema-Version: 2\r\nname: ESC4VulnWrite\r\nobjectCategory: \r\n CN=PKI-Certificate-Template,CN=Schema,CN=Configuration,DC=redteam,DC=lab\r\nobjectClass: top\r\nobjectClass: pKICertificateTemplate\r\npKICriticalExtensions: 2.5.29.19\r\npKICriticalExtensions: 2.5.29.15\r\npKIDefaultCSPs: 1,Microsoft Enhanced Cryptographic Provider v1.0\r\npKIDefaultKeySpec: 2\r\npKIExpirationPeriod:: AEAepOhl+v8=\r\npKIKeyUsage:: hgA=\r\npKIMaxIssuingDepth: -1\r\npKIOverlapPeriod:: AICmCv/e//8=\r\nrevision: 100\r\nshowInAdvancedViewOnly: TRUE\r\nuSNChanged: 16495\r\nuSNCreated: 16443\r\nwhenChanged: 20240214220029.0Z\r\nwhenCreated: 20240214214918.0Z\r\n\r\n",
+    "$fxv#7": "dn: CN=ESC3VulnRequestAgent,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=redteam,DC=lab\r\nchangetype: add\r\ncn: ESC3VulnRequestAgent\r\ndisplayName: ESC3VulnRequestAgent\r\ndistinguishedName: \r\n CN=ESC3VulnRequestAgent,CN=Certificate Templates,CN=Public Key Services\r\n ,CN=Services,CN=Configuration,DC=redteam,DC=lab\r\ndSCorePropagationData: 20240213215736.0Z\r\ndSCorePropagationData: 16010101000000.0Z\r\nflags: 131649\r\ninstanceType: 4\r\nmsPKI-Cert-Template-OID: \r\n 1.3.6.1.4.1.311.21.8.1958530.2366506.14305465.6392049.15594681.131.12316097.88\r\n 85348\r\nmsPKI-Certificate-Application-Policy: 1.3.6.1.4.1.311.20.2.1\r\nmsPKI-Certificate-Name-Flag: 33554432\r\nmsPKI-Enrollment-Flag: 32\r\nmsPKI-Minimal-Key-Size: 2048\r\nmsPKI-Private-Key-Flag: 16842752\r\nmsPKI-RA-Signature: 0\r\nmsPKI-Template-Minor-Revision: 4\r\nmsPKI-Template-Schema-Version: 2\r\nname: ESC3VulnRequestAgent\r\nobjectCategory: \r\n CN=PKI-Certificate-Template,CN=Schema,CN=Configuration,DC=redteam,DC=lab\r\nobjectClass: top\r\nobjectClass: pKICertificateTemplate\r\npKICriticalExtensions: 2.5.29.7\r\npKICriticalExtensions: 2.5.29.15\r\npKIDefaultCSPs: 2,Microsoft DH SChannel Cryptographic Provider\r\npKIDefaultCSPs: 1,Microsoft RSA SChannel Cryptographic Provider\r\npKIDefaultKeySpec: 1\r\npKIExpirationPeriod:: AIByDl3C/f8=\r\npKIExtendedKeyUsage: 1.3.6.1.4.1.311.20.2.1\r\npKIKeyUsage:: oAA=\r\npKIMaxIssuingDepth: 0\r\npKIOverlapPeriod:: AICmCv/e//8=\r\nrevision: 100\r\nshowInAdvancedViewOnly: TRUE\r\nuSNChanged: 45157\r\nuSNCreated: 45150\r\nwhenChanged: 20240213220051.0Z\r\nwhenCreated: 20240213215724.0Z\r\n\r\n",
+    "$fxv#8": "dn: CN=ESC3VulnAuthSignatures,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=redteam,DC=lab\r\nchangetype: modify\r\nreplace:nTSecurityDescriptor\r\nnTSecurityDescriptor:: \r\n AQAEnDQBAABQAQAAAAAAABQAAAAEACABBwAAAAUAOAAwAQAAAQAAAGjJEA77eNIRkNQAwE953FUBBQ\r\n AAAAAABRUAAACFa0zdCCs5h90YYu0AAgAABQA4ADABAAABAAAAaMkQDvt40hGQ1ADAT3ncVQEFAAAA\r\n AAAFFQAAAIVrTN0IKzmH3Rhi7QcCAAAFACgAAAEAAAEAAABoyRAO+3jSEZDUAMBPedxVAQEAAAAAAA\r\n ULAAAAAAAkAP8ADwABBQAAAAAABRUAAACFa0zdCCs5h90YYu0AAgAAAAAkAP8ADwABBQAAAAAABRUA\r\n AACFa0zdCCs5h90YYu0HAgAAAAAkAP8ADwABBQAAAAAABRUAAACFa0zdCCs5h90YYu1PBAAAAAAUAJ\r\n QAAgABAQAAAAAABQsAAAABBQAAAAAABRUAAACFa0zdCCs5h90YYu1PBAAAAQUAAAAAAAUVAAAAhWtM\r\n 3QgrOYfdGGLtBwIAAA==\r\n-\r\n",
+    "$fxv#9": "dn: CN=ESC4VulnWrite,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=redteam,DC=lab\r\nchangetype: modify\r\nreplace:nTSecurityDescriptor\r\nnTSecurityDescriptor:: \r\n AQAEnDQBAABQAQAAAAAAABQAAAAEACABBwAAAAYAKAAAAQAAAQAAAMKMW6C8FwJIpxDnwVq4ZqIBAQ\r\n AAAAAABQsAAAAFADgAMAEAAAEAAABoyRAO+3jSEZDUAMBPedxVAQUAAAAAAAUVAAAAX/H53KXtdAw6\r\n 4UyHAAIAAAUAOAAwAQAAAQAAAGjJEA77eNIRkNQAwE953FUBBQAAAAAABRUAAABf8fncpe10DDrhTI\r\n cHAgAAAAAkAP8ADwABBQAAAAAABRUAAABf8fncpe10DDrhTIcAAgAAAAAkAP8ADwABBQAAAAAABRUA\r\n AABf8fncpe10DDrhTIcHAgAAAAAkAP8ADwABBQAAAAAABRUAAABf8fncpe10DDrhTIf0AQAAAAAUAL\r\n QADgABAQAAAAAABQsAAAABBQAAAAAABRUAAABf8fncpe10DDrhTIf0AQAAAQUAAAAAAAUVAAAAX/H5\r\n 3KXtdAw64UyHBwIAAA==\r\n-\r\n\r\n",
+    "isIP10": "[startsWith(parameters('privateIPAddress'), '10.10.')]",
+    "isIP172": "[startsWith(parameters('privateIPAddress'), '172.16.')]",
+    "isIP192": "[startsWith(parameters('privateIPAddress'), '192.168.')]",
+    "vName": "[if(parameters('oldScenarios'), 'lab-network', if(variables('isIP10'), 'vnet-10', if(variables('isIP172'), 'vnet-172', 'vnet-192')))]",
+    "subnetName": "[if(parameters('oldScenarios'), 'root-subnet', if(variables('isIP10'), 'vnet-10/subnet-10', if(variables('isIP172'), 'vnet-172/subnet-172', 'vnet-192/subnet-192')))]",
+    "currentNetwork": "[if(startsWith(parameters('privateIPAddress'), '10.10.'), '10', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172', '192'))]",
+    "dcNetwork": "[if(startsWith(parameters('rootDomainControllerPrivateIp'), '10.10.'), '10', if(startsWith(parameters('rootDomainControllerPrivateIp'), '172.16.'), '172', '192'))]",
+    "requiresPeering": "[and(and(not(empty(parameters('rootDomainControllerPrivateIp'))), not(equals(variables('currentNetwork'), variables('dcNetwork')))), not(parameters('skipPeering')))]",
+    "jumpboxNetwork": "[if(empty(parameters('jumpboxPrivateIPAddress')), '00', if(startsWith(parameters('jumpboxPrivateIPAddress'), '10.10.'), '10', if(startsWith(parameters('jumpboxPrivateIPAddress'), '172.16.'), '172', '192')))]",
+    "isJumpbox": "[if(and(and(and(not(empty(parameters('privateIPAddress'))), not(empty(parameters('connectedPrivateIPAddress')))), not(empty(variables('currentNetwork')))), not(empty(variables('jumpboxNetwork')))), and(equals(parameters('privateIPAddress'), parameters('connectedPrivateIPAddress')), not(equals(variables('currentNetwork'), variables('jumpboxNetwork')))), false())]",
+    "caPeeringRules": "[if(variables('requiresPeering'), createArray(createObject('name', 'Allow-DC-to-CA-Inbound', 'properties', createObject('description', 'Allows inbound traffic from Domain Controller', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', parameters('rootDomainControllerPrivateIp'), 'destinationAddressPrefix', parameters('privateIPAddress'), 'access', 'Allow', 'priority', 100, 'direction', 'Inbound')), createObject('name', 'Allow-CA-to-DC-Outbound', 'properties', createObject('description', 'Allows outbound traffic to Domain Controller', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', parameters('privateIPAddress'), 'destinationAddressPrefix', parameters('rootDomainControllerPrivateIp'), 'access', 'Allow', 'priority', 100, 'direction', 'Outbound')), createObject('name', 'Allow-IntraSubnet-Inbound', 'properties', createObject('description', 'Allows all inbound traffic within same subnet', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'destinationAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'access', 'Allow', 'priority', 200, 'direction', 'Inbound')), createObject('name', 'Allow-IntraSubnet-Outbound', 'properties', createObject('description', 'Allows all outbound traffic within same subnet', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'destinationAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'access', 'Allow', 'priority', 200, 'direction', 'Outbound')), createObject('name', 'Deny-CrossSubnet-Inbound', 'properties', createObject('description', 'Denies all other inbound cross-subnet traffic', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', if(startsWith(parameters('rootDomainControllerPrivateIp'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('rootDomainControllerPrivateIp'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'destinationAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'access', 'Deny', 'priority', 4000, 'direction', 'Inbound')), createObject('name', 'Deny-CrossSubnet-Outbound', 'properties', createObject('description', 'Denies all other outbound cross-subnet traffic', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'destinationAddressPrefix', if(startsWith(parameters('rootDomainControllerPrivateIp'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('rootDomainControllerPrivateIp'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'access', 'Deny', 'priority', 4000, 'direction', 'Outbound'))), createArray())]",
+    "jumpboxRules": "[if(variables('isJumpbox'), createArray(createObject('name', 'Allow-Jumpbox-Communication-Inbound', 'properties', createObject('description', 'Allows inbound traffic from jumpbox', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', parameters('jumpboxPrivateIPAddress'), 'destinationAddressPrefix', parameters('privateIPAddress'), 'access', 'Allow', 'priority', 150, 'direction', 'Inbound')), createObject('name', 'Allow-Jumpbox-Communication-Outbound', 'properties', createObject('description', 'Allows outbound traffic to jumpbox', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', parameters('privateIPAddress'), 'destinationAddressPrefix', parameters('jumpboxPrivateIPAddress'), 'access', 'Allow', 'priority', 150, 'direction', 'Outbound'))), createArray())]",
+    "publicIPRules": "[if(parameters('hasPublicIP'), createArray(createObject('name', 'Allow-RDP-From-Public', 'properties', createObject('description', 'Allows RDP from caller IP', 'protocol', 'Tcp', 'sourcePortRange', '*', 'destinationPortRange', '3389', 'sourceAddressPrefix', parameters('callerIPAddress'), 'destinationAddressPrefix', parameters('privateIPAddress'), 'access', 'Allow', 'priority', 102, 'direction', 'Inbound'))), createArray())]",
+    "allNSGRules": "[concat(variables('caPeeringRules'), variables('jumpboxRules'), variables('publicIPRules'))]"
+  },
+  "resources": [
+    {
+      "condition": "[not(empty(variables('allNSGRules')))]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-05-01",
+      "name": "[format('ca-nsg-{0}', parameters('virtualMachineHostname'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": "[variables('allNSGRules')]"
+      }
+    },
+    {
+      "condition": "[parameters('hasPublicIP')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}-pip', parameters('virtualMachineHostname'))]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Basic"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[toLower(format('{0}-{1}', parameters('virtualMachineHostname'), uniqueString(resourceGroup().id)))]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}-NIC', parameters('virtualMachineHostname'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "dnsSettings": {
+          "dnsServers": [
+            "[parameters('rootDomainControllerPrivateIp')]",
+            "8.8.8.8"
+          ]
+        },
+        "ipConfigurations": [
+          {
+            "name": "ipconfigCA",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('privateIPAddress')]",
+              "subnet": {
+                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Network/virtualNetworks/subnets', split(variables('subnetName'), '/')[0], split(variables('subnetName'), '/')[1])]"
+              },
+              "publicIPAddress": "[if(parameters('hasPublicIP'), createObject('id', resourceId('Microsoft.Network/publicIPAddresses', format('{0}-pip', parameters('virtualMachineHostname')))), null())]"
+            }
+          }
+        ],
+        "networkSecurityGroup": "[if(not(empty(variables('allNSGRules'))), createObject('id', resourceId('Microsoft.Network/networkSecurityGroups', format('ca-nsg-{0}', parameters('virtualMachineHostname')))), null())]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', format('ca-nsg-{0}', parameters('virtualMachineHostname')))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', format('{0}-pip', parameters('virtualMachineHostname')))]"
+      ]
+    },
+    {
+      "condition": "[variables('requiresPeering')]",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-05-01",
+      "name": "[format('vnet-{0}/peer-to-{1}', variables('currentNetwork'), variables('dcNetwork'))]",
+      "properties": {
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": true,
+        "useRemoteGateways": false,
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-{0}', variables('dcNetwork')))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+      ]
+    },
+    {
+      "condition": "[variables('requiresPeering')]",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-05-01",
+      "name": "[format('vnet-{0}/peer-to-{1}', variables('dcNetwork'), variables('currentNetwork'))]",
+      "properties": {
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": true,
+        "useRemoteGateways": false,
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-{0}', variables('currentNetwork')))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', split(format('vnet-{0}/peer-to-{1}', variables('currentNetwork'), variables('dcNetwork')), '/')[0], split(format('vnet-{0}/peer-to-{1}', variables('currentNetwork'), variables('dcNetwork')), '/')[1])]"
+      ]
+    },
+    {
+      "condition": "[variables('isJumpbox')]",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-05-01",
+      "name": "[format('vnet-{0}/peer-to-{1}', variables('currentNetwork'), variables('jumpboxNetwork'))]",
+      "properties": {
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": true,
+        "useRemoteGateways": false,
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-{0}', variables('jumpboxNetwork')))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployOrBuild'), 'deploy')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-07-01",
+      "name": "[parameters('virtualMachineHostname')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "VM": "[format('CA:{0}', parameters('resourceGroupName'))]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('virtualMachineSize')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[parameters('imageReference')]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployOrBuild'), 'build')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-07-01",
+      "name": "[parameters('virtualMachineHostname')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "VM": "[format('CA:{0}', parameters('resourceGroupName'))]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('virtualMachineSize')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "[parameters('osDiskType')]"
+            }
+          },
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-datacenter-g2",
+            "version": "latest"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[parameters('virtualMachineHostname')]",
+          "adminUsername": "[parameters('localAdminUsername')]",
+          "adminPassword": "[parameters('localAdminPassword')]",
+          "windowsConfiguration": {
+            "provisionVMAgent": true
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployOrBuild'), 'build')]",
+      "type": "Microsoft.Compute/virtualMachines/runCommands",
+      "apiVersion": "2023-07-01",
+      "name": "[format('{0}/{1}', parameters('virtualMachineHostname'), 'setupConfigurationFilesCA')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "parameters": [
+          {
+            "name": "targetFiles",
+            "value": "module,esc"
+          }
+        ],
+        "source": {
+          "script": "[replace(replace(replace(replace(replace(replace(replace(replace(replace(variables('$fxv#0'), '__MODULE_CONTENT_PLACEHOLDER__', variables('$fxv#1')), '__ESC1_VULN_PLACEHOLDER__', variables('$fxv#2')), '__ESC1_VULN_SD_PLACEHOLDER__', variables('$fxv#3')), '__ESC3_AUTH_SIG_PLACEHOLDER__', variables('$fxv#4')), '__ESC3_REQ_AGENT_SD_PLACEHOLDER__', variables('$fxv#5')), '__ESC4_VULN_PLACEHOLDER__', variables('$fxv#6')), '__ESC3_REQ_AGENT_PLACEHOLDER__', variables('$fxv#7')), '__ESC3_AUTH_SIG_SD_PLACEHOLDER__', variables('$fxv#8')), '__ESC4_VULN_SD_PLACEHOLDER__', variables('$fxv#9'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineHostname'))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployOrBuild'), 'build')]",
+      "type": "Microsoft.Compute/virtualMachines/runCommands",
+      "apiVersion": "2023-07-01",
+      "name": "[format('{0}/{1}', parameters('virtualMachineHostname'), 'JoinDomain')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "parameters": [
+          {
+            "name": "domainAndEnterpriseAdminUsername",
+            "value": "[parameters('domainAndEnterpriseAdminUsername')]"
+          },
+          {
+            "name": "enterpriseAdminPassword",
+            "value": "[parameters('enterpriseAdminPassword')]"
+          },
+          {
+            "name": "domainName",
+            "value": "[parameters('domainName')]"
+          }
+        ],
+        "source": {
+          "script": "[variables('$fxv#10')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineHostname'))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployOrBuild'), 'build')]",
+      "type": "Microsoft.Compute/virtualMachines/runCommands",
+      "apiVersion": "2023-07-01",
+      "name": "[format('{0}/{1}', parameters('virtualMachineHostname'), 'CertificateAuthorityConfigurationScript')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "parameters": [
+          {
+            "name": "enterpriseAdminUsername",
+            "value": "[parameters('domainAndEnterpriseAdminUsername')]"
+          },
+          {
+            "name": "enterpriseAdminPassword",
+            "value": "[parameters('enterpriseAdminPassword')]"
+          }
+        ],
+        "source": {
+          "script": "[variables('$fxv#11')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineHostname'))]",
+        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineHostname'), 'JoinDomain')]"
+      ]
+    }
+  ]
+}

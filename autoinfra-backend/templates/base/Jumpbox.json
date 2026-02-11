@@ -1,0 +1,480 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.34.44.8038",
+      "templateHash": "16691219629332653670"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for resources to be deployed"
+      }
+    },
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "VM Name"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "metadata": {
+        "description": "VM Size"
+      }
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Resouce group name to deploy to"
+      }
+    },
+    "referenceID": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "jumpboxPrivateIPAddress": {
+      "type": "string",
+      "defaultValue": "10.10.0.45",
+      "metadata": {
+        "description": "Private IP Address for the Jumpbox"
+      }
+    },
+    "connectedPrivateIPAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Connected Private IP Address for peering"
+      }
+    },
+    "deployOrBuild": {
+      "type": "string",
+      "defaultValue": "build"
+    },
+    "osDiskType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS"
+    },
+    "kaliSku": {
+      "type": "string",
+      "defaultValue": "kali-2025-2",
+      "metadata": {
+        "description": "Kali Linux SKU version (e.g., kali-2025-2)"
+      }
+    },
+    "imageReference": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Image reference ID for custom Jumpbox snapshot (optional - if provided, uses snapshot instead of marketplace)"
+      }
+    },
+    "oldScenarios": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Flag for old scenarios"
+      }
+    },
+    "isVNet10Required": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "isVNet172Required": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "isVNet192Required": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "jumpboxAdminUsername": {
+      "type": "string",
+      "defaultValue": "redteamer"
+    },
+    "jumpboxAdminPassword": {
+      "type": "string",
+      "defaultValue": "Password#123"
+    },
+    "callerIPAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "IP address of the caller initiating the build - will be granted full access"
+      }
+    }
+  },
+  "variables": {
+    "$fxv#0": "#cloud-config\nwrite_files:\n  - path: /usr/local/bin/jumpbox-setup.sh\n    permissions: \"0755\"\n    owner: root:root\n    content: |\n      #!/bin/bash\n      set -e\n      export DEBIAN_FRONTEND=noninteractive\n\n      LOGFILE=\"/var/log/kali-provisioning.log\"\n      exec > >(tee -a \"$LOGFILE\") 2>&1\n\n      apt-get update\n      apt-get upgrade -y\n\n      apt-get install -y kali-desktop-xfce kali-system-gui xserver-xorg xfce4 xfce4-goodies\n      apt-get install -y kali-linux-default\n      apt-get install -y docker.io docker-compose rdesktop freerdp3-x11\n\n      mkdir -p /opt/bloodhoundce\n      wget https://github.com/SpecterOps/bloodhound-cli/releases/latest/download/bloodhound-cli-linux-amd64.tar.gz -O /opt/bloodhoundce/bloodhound-cli-linux-amd64.tar.gz\n      tar -xf /opt/bloodhoundce/bloodhound-cli-linux-amd64.tar.gz -C /opt/bloodhoundce\n      /opt/bloodhoundce/bloodhound-cli install\n      /opt/bloodhoundce/bloodhound-cli config get default_password > /opt/bloodhoundce/admin-password.txt\n\nruncmd:\n  - [bash, /usr/local/bin/jumpbox-setup.sh]\n",
+    "$fxv#1": "#cloud-config\nwrite_files:\n  - path: /usr/local/bin/jumpbox-setup.sh\n    permissions: \"0755\"\n    owner: root:root\n    content: |\n      #!/bin/bash\n      set -e\n      export DEBIAN_FRONTEND=noninteractive\n\n      LOGFILE=\"/var/log/kali-provisioning.log\"\n      exec > >(tee -a \"$LOGFILE\") 2>&1\n\n      apt-get update\n      apt-get upgrade -y\n\n      apt-get install -y kali-desktop-xfce kali-system-gui xserver-xorg xfce4 xfce4-goodies\n      apt-get install -y kali-linux-default\n      apt-get install -y docker.io docker-compose rdesktop freerdp3-x11\n\n      mkdir -p /opt/bloodhoundce\n      wget https://github.com/SpecterOps/bloodhound-cli/releases/latest/download/bloodhound-cli-linux-amd64.tar.gz -O /opt/bloodhoundce/bloodhound-cli-linux-amd64.tar.gz\n      tar -xf /opt/bloodhoundce/bloodhound-cli-linux-amd64.tar.gz -C /opt/bloodhoundce\n      /opt/bloodhoundce/bloodhound-cli install\n      /opt/bloodhoundce/bloodhound-cli config get default_password > /opt/bloodhoundce/admin-password.txt\n\nruncmd:\n  - [bash, /usr/local/bin/jumpbox-setup.sh]\n",
+    "isIP10": "[startsWith(parameters('jumpboxPrivateIPAddress'), '10.10.')]",
+    "isIP172": "[startsWith(parameters('jumpboxPrivateIPAddress'), '172.16.')]",
+    "isIP192": "[startsWith(parameters('jumpboxPrivateIPAddress'), '192.168.')]",
+    "vName": "[if(parameters('oldScenarios'), 'lab-network', if(variables('isIP10'), 'vnet-10', if(variables('isIP172'), 'vnet-172', 'vnet-192')))]",
+    "subnetName": "[if(parameters('oldScenarios'), 'root-subnet', if(variables('isIP10'), 'vnet-10/subnet-10', if(variables('isIP172'), 'vnet-172/subnet-172', 'vnet-192/subnet-192')))]",
+    "jumpboxNetwork": "[if(parameters('oldScenarios'), '', if(startsWith(parameters('jumpboxPrivateIPAddress'), '10.10.'), '10', if(startsWith(parameters('jumpboxPrivateIPAddress'), '172.16.'), '172', '192')))]",
+    "connectedNetwork": "[if(parameters('oldScenarios'), '', if(startsWith(parameters('connectedPrivateIPAddress'), '10.10.'), '10', if(startsWith(parameters('connectedPrivateIPAddress'), '172.16.'), '172', '192')))]",
+    "requiresPeering": "[if(parameters('oldScenarios'), false(), not(equals(variables('jumpboxNetwork'), variables('connectedNetwork'))))]",
+    "oldScenarioIP": "[if(parameters('oldScenarios'), '10.10.0.37', '')]",
+    "privateIPAddress": "[if(parameters('oldScenarios'), variables('oldScenarioIP'), parameters('jumpboxPrivateIPAddress'))]",
+    "baseSecurityRules": [
+      {
+        "name": "Inbound-SSH-from-Caller",
+        "properties": {
+          "description": "Allows SSH access from the caller IP address",
+          "protocol": "TCP",
+          "sourcePortRange": "*",
+          "destinationPortRange": "22",
+          "sourceAddressPrefix": "[if(not(empty(parameters('callerIPAddress'))), parameters('callerIPAddress'), '0.0.0.0/0')]",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": 100,
+          "direction": "Inbound"
+        }
+      },
+      {
+        "name": "Inbound-RDP-from-Caller",
+        "properties": {
+          "description": "Allows RDP access from the caller IP address",
+          "protocol": "TCP",
+          "sourcePortRange": "*",
+          "destinationPortRange": "3389",
+          "sourceAddressPrefix": "[if(not(empty(parameters('callerIPAddress'))), parameters('callerIPAddress'), '0.0.0.0/0')]",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": 101,
+          "direction": "Inbound"
+        }
+      },
+      {
+        "name": "Outbound-Internet-Access",
+        "properties": {
+          "description": "Allows outbound internet access for apt-install and updates",
+          "protocol": "*",
+          "sourcePortRange": "*",
+          "destinationPortRange": "*",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "Internet",
+          "access": "Allow",
+          "priority": 100,
+          "direction": "Outbound"
+        }
+      },
+      {
+        "name": "Outbound-VirtualNetwork-Access",
+        "properties": {
+          "description": "Allows outbound access to virtual network",
+          "protocol": "*",
+          "sourcePortRange": "*",
+          "destinationPortRange": "*",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "VirtualNetwork",
+          "access": "Allow",
+          "priority": 101,
+          "direction": "Outbound"
+        }
+      }
+    ],
+    "peeringSecurityRules": [
+      {
+        "name": "Allow-ConnectedIP-All-Inbound",
+        "properties": {
+          "description": "Allows all inbound traffic from connected private IP",
+          "protocol": "*",
+          "sourcePortRange": "*",
+          "destinationPortRange": "*",
+          "sourceAddressPrefix": "[parameters('connectedPrivateIPAddress')]",
+          "destinationAddressPrefix": "[parameters('jumpboxPrivateIPAddress')]",
+          "access": "Allow",
+          "priority": 105,
+          "direction": "Inbound"
+        }
+      },
+      {
+        "name": "Allow-ConnectedIP-All-Outbound",
+        "properties": {
+          "description": "Allows all outbound traffic to connected private IP",
+          "protocol": "*",
+          "sourcePortRange": "*",
+          "destinationPortRange": "*",
+          "sourceAddressPrefix": "[parameters('jumpboxPrivateIPAddress')]",
+          "destinationAddressPrefix": "[parameters('connectedPrivateIPAddress')]",
+          "access": "Allow",
+          "priority": 105,
+          "direction": "Outbound"
+        }
+      },
+      {
+        "name": "Deny-All-Inbound",
+        "properties": {
+          "description": "Denies all other inbound traffic",
+          "protocol": "*",
+          "sourcePortRange": "*",
+          "destinationPortRange": "*",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "[parameters('jumpboxPrivateIPAddress')]",
+          "access": "Deny",
+          "priority": 4000,
+          "direction": "Inbound"
+        }
+      },
+      {
+        "name": "Deny-All-Outbound",
+        "properties": {
+          "description": "Denies all other outbound traffic",
+          "protocol": "*",
+          "sourcePortRange": "*",
+          "destinationPortRange": "*",
+          "sourceAddressPrefix": "[parameters('jumpboxPrivateIPAddress')]",
+          "destinationAddressPrefix": "*",
+          "access": "Deny",
+          "priority": 4000,
+          "direction": "Outbound"
+        }
+      }
+    ],
+    "allSecurityRules": "[if(and(variables('requiresPeering'), not(empty(parameters('connectedPrivateIPAddress')))), concat(variables('baseSecurityRules'), variables('peeringSecurityRules')), variables('baseSecurityRules'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-05-01",
+      "name": "jumpbox-public-ip",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Basic",
+        "tier": "Regional"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-05-01",
+      "name": "[format('jumpbox-nsg-{0}', parameters('vmName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": "[variables('allSecurityRules')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-05-01",
+      "name": "test-nic-JUMPBOX",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfigJumpbox",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('privateIPAddress')]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'jumpbox-public-ip')]"
+              },
+              "subnet": {
+                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Network/virtualNetworks/subnets', split(variables('subnetName'), '/')[0], split(variables('subnetName'), '/')[1])]"
+              },
+              "primary": true,
+              "privateIPAddressVersion": "IPv4"
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', format('jumpbox-nsg-{0}', parameters('vmName')))]"
+        },
+        "nicType": "Standard"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', format('jumpbox-nsg-{0}', parameters('vmName')))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'jumpbox-public-ip')]"
+      ]
+    },
+    {
+      "condition": "[variables('requiresPeering')]",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-05-01",
+      "name": "[format('vnet-{0}/peer-to-{1}', variables('jumpboxNetwork'), variables('connectedNetwork'))]",
+      "properties": {
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": true,
+        "useRemoteGateways": false,
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-{0}', variables('connectedNetwork')))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'test-nic-JUMPBOX')]"
+      ]
+    },
+    {
+      "condition": "[and(equals(parameters('deployOrBuild'), 'deploy'), empty(parameters('imageReference')))]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-07-01",
+      "name": "DeployJumpbox",
+      "location": "[parameters('location')]",
+      "tags": {
+        "VM": "[format('Jumpbox:{0}', parameters('resourceGroupName'))]"
+      },
+      "plan": {
+        "name": "[parameters('kaliSku')]",
+        "publisher": "kali-linux",
+        "product": "kali"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('vmName')]",
+          "adminUsername": "[parameters('jumpboxAdminUsername')]",
+          "adminPassword": "[parameters('jumpboxAdminPassword')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false,
+            "provisionVMAgent": true
+          },
+          "customData": "[base64(variables('$fxv#0'))]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "kali-linux",
+            "offer": "kali",
+            "sku": "[parameters('kaliSku')]",
+            "version": "latest"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'test-nic-JUMPBOX')]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'test-nic-JUMPBOX')]"
+      ]
+    },
+    {
+      "condition": "[and(equals(parameters('deployOrBuild'), 'deploy'), not(empty(parameters('imageReference'))))]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-07-01",
+      "name": "DeployJumpbox",
+      "location": "[parameters('location')]",
+      "tags": {
+        "VM": "[format('Jumpbox:{0}', parameters('resourceGroupName'))]"
+      },
+      "plan": {
+        "name": "[parameters('kaliSku')]",
+        "publisher": "kali-linux",
+        "product": "kali"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[parameters('imageReference')]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'test-nic-JUMPBOX')]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'test-nic-JUMPBOX')]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployOrBuild'), 'build')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-07-01",
+      "name": "BuildJumpbox",
+      "location": "[parameters('location')]",
+      "tags": {
+        "VM": "[format('Jumpbox:{0}', parameters('resourceGroupName'))]"
+      },
+      "plan": {
+        "name": "[parameters('kaliSku')]",
+        "publisher": "kali-linux",
+        "product": "kali"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "Jumpbox",
+          "adminUsername": "redteamer",
+          "adminPassword": "Password#123",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false,
+            "provisionVMAgent": true
+          },
+          "customData": "[base64(variables('$fxv#1'))]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "[parameters('osDiskType')]"
+            }
+          },
+          "imageReference": {
+            "publisher": "kali-linux",
+            "offer": "kali",
+            "sku": "[parameters('kaliSku')]",
+            "version": "latest"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'test-nic-JUMPBOX')]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'test-nic-JUMPBOX')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "debugDeployOrBuild": {
+      "type": "string",
+      "value": "[parameters('deployOrBuild')]"
+    },
+    "debugJumpboxIP": {
+      "type": "string",
+      "value": "[parameters('jumpboxPrivateIPAddress')]"
+    },
+    "debugConnectedIP": {
+      "type": "string",
+      "value": "[parameters('connectedPrivateIPAddress')]"
+    },
+    "debugRequiresPeering": {
+      "type": "bool",
+      "value": "[variables('requiresPeering')]"
+    },
+    "debugJumpboxNetwork": {
+      "type": "string",
+      "value": "[variables('jumpboxNetwork')]"
+    },
+    "debugConnectedNetwork": {
+      "type": "string",
+      "value": "[variables('connectedNetwork')]"
+    }
+  }
+}

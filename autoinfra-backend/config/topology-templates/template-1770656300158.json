@@ -1,0 +1,81 @@
+{
+  "id": "template-1770656300158",
+  "name": "3 Domain Tier Environment",
+  "description": "This consists of 3 domain controllers residing at each domain level and a jumpbox",
+  "parameters": {
+    "deployResourceGroupName": {
+      "value": "BuildLab-Template"
+    },
+    "scenarioSelection": {
+      "value": "BUILD"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "scenarioTagValue": {
+      "value": "BUILD"
+    },
+    "expiryTimestamp": {
+      "value": "2026-02-10T16:58:20.158Z"
+    },
+    "enterpriseAdminUsername": {
+      "value": "buildadmin"
+    },
+    "enterpriseAdminPassword": {
+      "value": "Password#123"
+    },
+    "subscriptionID": {
+      "value": ""
+    },
+    "JUMPBOXImageReferenceID": {
+      "value": ""
+    },
+    "rootDomainControllers": {
+      "value": [
+        {
+          "name": "DC01",
+          "domainName": "build.lab",
+          "netbios": "build",
+          "isRoot": true,
+          "privateIPAddress": "10.10.0.5",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "subDomainControllers": {
+      "value": [
+        {
+          "name": "DC02",
+          "domainName": "sub.build.lab",
+          "netbios": "sub",
+          "isRoot": false,
+          "privateIPAddress": "10.10.0.6",
+          "hasPublicIP": false
+        },
+        {
+          "name": "DC03",
+          "domainName": "test.sub.build.lab",
+          "netbios": "test",
+          "isRoot": false,
+          "privateIPAddress": "10.10.0.7",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "standaloneServers": {
+      "value": []
+    },
+    "certificateAuthorities": {
+      "value": []
+    },
+    "jumpboxConfig": {
+      "value": [
+        {
+          "jumpboxPrivateIPAddress": "10.10.0.8",
+          "connectedPrivateIPAddress": "10.10.0.7"
+        }
+      ]
+    }
+  },
+  "created": "2026-02-09T16:58:20.158Z"
+}

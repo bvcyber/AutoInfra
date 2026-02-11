@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "rootDCName": {
+      "value": "DC01"
+    },
+    "subDCName": {
+      "value": "DC02"
+    },
+    "caName": {
+      "value": "CA01"
+    },
+    "rootStandaloneServerName": {
+      "value": "SRV01"
+    },
+    "subStandaloneServerName": {
+      "value": "SRV02"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "DC01ImageReferenceID": {
+      "value": ""
+    },
+    "DC02ImageReferenceID": {
+      "value": ""
+    },
+    "CA01ImageReferenceID": {
+      "value": ""
+    },
+    "SRV01ImageReferenceID": {
+      "value": ""
+    },
+    "SRV02ImageReferenceID": {
+      "value": ""
+    },
+    "JUMPBOXImageReferenceID": {
+      "value": ""
+    },
+    "rootDomainName": {
+      "value": "redteam.lab"
+    },
+    "subDomainName": {
+      "value": "sub"
+    },
+    "enterpriseAdminUsername": {
+      "value": "redteamadmin"
+    },
+    "enterpriseAdminPassword": {
+      "value": "Password#1"
+    },
+    "caAdminUsername": {
+      "value": "certadmin"
+    },
+    "caAdminPassword": {
+      "value": "Password#1"
+    },
+    "standaloneAdminUsername": {
+      "value": "srvadmin"
+    },
+    "standaloneAdminPassword": {
+      "value": "Password#1"
+    },
+    "rootDomainNetBIOSName": {
+      "value": "redteam"
+    },
+    "subscriptionID": {
+      "value": ""
+    },
+    "scenarioTagValue": {
+      "value": "BUILD"
+    },
+    "scenarioSelection": {
+      "value": "BUILD"
+    }
+  }
+}

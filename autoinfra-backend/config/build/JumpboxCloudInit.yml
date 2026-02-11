@@ -1,0 +1,35 @@
+#cloud-config
+write_files:
+  - path: /usr/local/bin/jumpbox-setup.sh
+    permissions: "0755"
+    owner: root:root
+    content: |
+      #!/bin/bash
+      set -e
+      export DEBIAN_FRONTEND=noninteractive
+
+      LOGFILE="/var/log/kali-provisioning.log"
+      exec > >(tee -a "$LOGFILE") 2>&1
+
+      apt-get update
+      apt-get upgrade -y
+
+      apt-get install -y kali-desktop-xfce kali-system-gui xserver-xorg xfce4 xfce4-goodies
+      apt-get install -y kali-linux-default
+      apt-get install -y docker.io docker-compose rdesktop freerdp3-x11 xrdp
+
+      # Configure and start xrdp
+      systemctl enable xrdp
+      systemctl start xrdp
+
+      # Allow console login for xrdp
+      echo "allowed_users=anybody" > /etc/X11/Xwrapper.config
+
+      mkdir -p /opt/bloodhoundce
+      wget https://github.com/SpecterOps/bloodhound-cli/releases/latest/download/bloodhound-cli-linux-amd64.tar.gz -O /opt/bloodhoundce/bloodhound-cli-linux-amd64.tar.gz
+      tar -xf /opt/bloodhoundce/bloodhound-cli-linux-amd64.tar.gz -C /opt/bloodhoundce
+      /opt/bloodhoundce/bloodhound-cli install
+      /opt/bloodhoundce/bloodhound-cli config get default_password > /opt/bloodhoundce/admin-password.txt
+
+runcmd:
+  - [bash, /usr/local/bin/jumpbox-setup.sh]

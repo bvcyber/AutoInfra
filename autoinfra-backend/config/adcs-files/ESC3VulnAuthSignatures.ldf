@@ -1,0 +1,44 @@
+dn: CN=ESC3VulnAuthSignatures,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=redteam,DC=lab
+changetype: add
+cn: ESC3VulnAuthSignatures
+displayName: ESC3VulnAuthSignatures
+distinguishedName: 
+ CN=ESC3VulnAuthSignatures,CN=Certificate Templates,CN=Public Key Servic
+ es,CN=Services,CN=Configuration,DC=redteam,DC=lab
+dSCorePropagationData: 16010101000000.0Z
+flags: 131649
+instanceType: 4
+msPKI-Cert-Template-OID: 
+ 1.3.6.1.4.1.311.21.8.1958530.2366506.14305465.6392049.15594681.131.12906934.52
+ 08534
+msPKI-Certificate-Application-Policy: 1.3.6.1.5.5.7.3.2
+msPKI-Certificate-Name-Flag: 33554432
+msPKI-Enrollment-Flag: 32
+msPKI-Minimal-Key-Size: 2048
+msPKI-Private-Key-Flag: 16842752
+msPKI-RA-Application-Policies: 1.3.6.1.4.1.311.20.2.1
+msPKI-RA-Signature: 1
+msPKI-Template-Minor-Revision: 6
+msPKI-Template-Schema-Version: 2
+name: ESC3VulnAuthSignatures
+objectCategory: 
+ CN=PKI-Certificate-Template,CN=Schema,CN=Configuration,DC=redteam,DC=lab
+objectClass: top
+objectClass: pKICertificateTemplate
+pKICriticalExtensions: 2.5.29.15
+pKICriticalExtensions: 2.5.29.7
+pKIDefaultCSPs: 2,Microsoft DH SChannel Cryptographic Provider
+pKIDefaultCSPs: 1,Microsoft RSA SChannel Cryptographic Provider
+pKIDefaultKeySpec: 1
+pKIExpirationPeriod:: AIByDl3C/f8=
+pKIExtendedKeyUsage: 1.3.6.1.5.5.7.3.2
+pKIKeyUsage:: oAA=
+pKIMaxIssuingDepth: 0
+pKIOverlapPeriod:: AICmCv/e//8=
+revision: 100
+showInAdvancedViewOnly: TRUE
+uSNChanged: 45209
+uSNCreated: 45207
+whenChanged: 20240213221056.0Z
+whenCreated: 20240213221055.0Z
+

@@ -1,0 +1,301 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.34.44.8038",
+      "templateHash": "9247338530024869069"
+    }
+  },
+  "parameters": {
+    "resourceGroupName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "scenarioTagValue": {
+      "type": "string"
+    },
+    "galleryName": {
+      "type": "string"
+    },
+    "domainNameTag": {
+      "type": "string"
+    },
+    "subscriptionID": {
+      "type": "string"
+    },
+    "sourceResourceGroupName": {
+      "type": "string"
+    },
+    "imageNamePrefix": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "serverObjects": {
+      "type": "array"
+    },
+    "kaliSku": {
+      "type": "string",
+      "defaultValue": "kali-2025-2"
+    },
+    "versionName": {
+      "type": "string",
+      "defaultValue": "1.0.0"
+    }
+  },
+  "variables": {
+    "effectiveImagePrefix": "[if(not(empty(parameters('imageNamePrefix'))), parameters('imageNamePrefix'), parameters('sourceResourceGroupName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2023-07-01",
+      "name": "[parameters('resourceGroupName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "Scenario": "[parameters('scenarioTagValue')]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "CreateVMGallery",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "galleryName": {
+            "value": "[parameters('galleryName')]"
+          },
+          "scenarioTagValue": {
+            "value": "[parameters('scenarioTagValue')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.44.8038",
+              "templateHash": "4151249238346892933"
+            }
+          },
+          "parameters": {
+            "galleryName": {
+              "type": "string",
+              "defaultValue": "VMImages"
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "eastus"
+            },
+            "scenarioTagValue": {
+              "type": "string",
+              "defaultValue": "build"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Compute/galleries",
+              "apiVersion": "2021-10-01",
+              "name": "[parameters('galleryName')]",
+              "location": "[parameters('location')]",
+              "properties": {},
+              "tags": {
+                "Scenario": "[parameters('scenarioTagValue')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "CreateSnapshot",
+        "count": "[length(parameters('serverObjects'))]"
+      },
+      "condition": "[not(empty(parameters('serverObjects')[copyIndex()].name))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('Create{0}Snapshot', if(contains(parameters('serverObjects')[copyIndex()], 'imageName'), parameters('serverObjects')[copyIndex()].imageName, parameters('serverObjects')[copyIndex()].name))]",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "galleryName": {
+            "value": "[parameters('galleryName')]"
+          },
+          "imageDefinitionName": {
+            "value": "[format('{0}/{1}-{2}', parameters('galleryName'), variables('effectiveImagePrefix'), if(contains(parameters('serverObjects')[copyIndex()], 'imageName'), parameters('serverObjects')[copyIndex()].imageName, parameters('serverObjects')[copyIndex()].name))]"
+          },
+          "vmGalleryResourceGroup": {
+            "value": "[parameters('resourceGroupName')]"
+          },
+          "publisher": {
+            "value": "[format('si-rtl-{0}-{1}', variables('effectiveImagePrefix'), if(contains(parameters('serverObjects')[copyIndex()], 'imageName'), parameters('serverObjects')[copyIndex()].imageName, parameters('serverObjects')[copyIndex()].name))]"
+          },
+          "offer": "[if(equals(parameters('serverObjects')[copyIndex()].serverType, 'Jumpbox'), createObject('value', format('kali-{0}-{1}', variables('effectiveImagePrefix'), if(contains(parameters('serverObjects')[copyIndex()], 'imageName'), parameters('serverObjects')[copyIndex()].imageName, parameters('serverObjects')[copyIndex()].name))), createObject('value', format('windows-server-{0}-{1}', variables('effectiveImagePrefix'), if(contains(parameters('serverObjects')[copyIndex()], 'imageName'), parameters('serverObjects')[copyIndex()].imageName, parameters('serverObjects')[copyIndex()].name))))]",
+          "sku": "[if(equals(parameters('serverObjects')[copyIndex()].serverType, 'Jumpbox'), createObject('value', format('kali-{0}-{1}', variables('effectiveImagePrefix'), if(contains(parameters('serverObjects')[copyIndex()], 'imageName'), parameters('serverObjects')[copyIndex()].imageName, parameters('serverObjects')[copyIndex()].name))), createObject('value', format('datacenter-{0}-{1}', variables('effectiveImagePrefix'), if(contains(parameters('serverObjects')[copyIndex()], 'imageName'), parameters('serverObjects')[copyIndex()].imageName, parameters('serverObjects')[copyIndex()].name))))]",
+          "osState": {
+            "value": "Specialized"
+          },
+          "osType": "[if(equals(parameters('serverObjects')[copyIndex()].serverType, 'Jumpbox'), createObject('value', 'Linux'), createObject('value', 'Windows'))]",
+          "vmName": {
+            "value": "[parameters('serverObjects')[copyIndex()].name]"
+          },
+          "versionName": {
+            "value": "[parameters('versionName')]"
+          },
+          "serverType": {
+            "value": "[parameters('serverObjects')[copyIndex()].serverType]"
+          },
+          "domainNameTag": {
+            "value": "[parameters('domainNameTag')]"
+          },
+          "subscriptionID": {
+            "value": "[parameters('subscriptionID')]"
+          },
+          "resourceGroupID": {
+            "value": "[parameters('sourceResourceGroupName')]"
+          },
+          "planPublisher": "[if(equals(parameters('serverObjects')[copyIndex()].serverType, 'Jumpbox'), createObject('value', 'kali-linux'), createObject('value', ''))]",
+          "planProduct": "[if(equals(parameters('serverObjects')[copyIndex()].serverType, 'Jumpbox'), createObject('value', 'kali'), createObject('value', ''))]",
+          "planName": "[if(equals(parameters('serverObjects')[copyIndex()].serverType, 'Jumpbox'), createObject('value', parameters('kaliSku')), createObject('value', ''))]"
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.44.8038",
+              "templateHash": "14641841937859372019"
+            }
+          },
+          "parameters": {
+            "galleryName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "imageDefinitionName": {
+              "type": "string"
+            },
+            "vmGalleryResourceGroup": {
+              "type": "string"
+            },
+            "publisher": {
+              "type": "string"
+            },
+            "offer": {
+              "type": "string"
+            },
+            "sku": {
+              "type": "string"
+            },
+            "osState": {
+              "type": "string"
+            },
+            "osType": {
+              "type": "string"
+            },
+            "subscriptionID": {
+              "type": "string"
+            },
+            "vmName": {
+              "type": "string"
+            },
+            "versionName": {
+              "type": "string"
+            },
+            "serverType": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "domainNameTag": {
+              "type": "string"
+            },
+            "resourceGroupID": {
+              "type": "string",
+              "defaultValue": "build"
+            },
+            "planPublisher": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "planProduct": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "planName": {
+              "type": "string",
+              "defaultValue": ""
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Compute/galleries/images",
+              "apiVersion": "2021-10-01",
+              "name": "[parameters('imageDefinitionName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "hyperVGeneration": "V2",
+                "osType": "[parameters('osType')]",
+                "osState": "[parameters('osState')]",
+                "identifier": {
+                  "publisher": "[parameters('publisher')]",
+                  "offer": "[parameters('offer')]",
+                  "sku": "[parameters('sku')]"
+                },
+                "purchasePlan": "[if(and(and(not(empty(parameters('planPublisher'))), not(empty(parameters('planProduct')))), not(empty(parameters('planName')))), createObject('name', parameters('planName'), 'publisher', parameters('planPublisher'), 'product', parameters('planProduct')), null())]"
+              },
+              "tags": {
+                "ServerType": "[parameters('serverType')]",
+                "DomainName": "[parameters('domainNameTag')]"
+              }
+            },
+            {
+              "type": "Microsoft.Compute/galleries/images/versions",
+              "apiVersion": "2023-07-03",
+              "name": "[format('{0}/{1}', parameters('imageDefinitionName'), parameters('versionName'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "storageProfile": {
+                  "source": {
+                    "virtualMachineId": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}', parameters('subscriptionID'), parameters('resourceGroupID'), parameters('vmName'))]"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/galleries/images', split(parameters('imageDefinitionName'), '/')[0], split(parameters('imageDefinitionName'), '/')[1])]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'CreateVMGallery')]"
+      ]
+    }
+  ]
+}

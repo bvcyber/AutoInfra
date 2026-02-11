@@ -1,0 +1,21 @@
+name: autoinfra
+
+services:
+  autoinfra-frontend:
+    container_name: autoinfra-frontend
+    image: autoinfra-frontend:1.0.0
+    build:
+      context: ./autoinfra-frontend
+      dockerfile: next.dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - autoinfra-backend
+  autoinfra-backend:
+    container_name: autoinfra-backend
+    image: autoinfra-backend:1.0.0
+    build:
+      context: ./autoinfra-backend
+      dockerfile: flask.dockerfile
+    ports:
+      - "8100:8100"

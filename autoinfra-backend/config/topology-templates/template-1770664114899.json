@@ -1,0 +1,118 @@
+{
+  "id": "template-1770664114899",
+  "name": "Giant Environment",
+  "description": "Lots of stuff",
+  "parameters": {
+    "deployResourceGroupName": {
+      "value": "BuildLab-Template"
+    },
+    "scenarioSelection": {
+      "value": "BUILD"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "scenarioTagValue": {
+      "value": "BUILD"
+    },
+    "expiryTimestamp": {
+      "value": "2026-02-10T19:08:34.899Z"
+    },
+    "enterpriseAdminUsername": {
+      "value": "buildadmin"
+    },
+    "enterpriseAdminPassword": {
+      "value": "Password#123"
+    },
+    "subscriptionID": {
+      "value": ""
+    },
+    "JUMPBOXImageReferenceID": {
+      "value": ""
+    },
+    "rootDomainControllers": {
+      "value": [
+        {
+          "name": "DC01",
+          "domainName": "build.lab",
+          "netbios": "build",
+          "isRoot": true,
+          "privateIPAddress": "10.10.0.5",
+          "hasPublicIP": true
+        }
+      ]
+    },
+    "subDomainControllers": {
+      "value": [
+        {
+          "name": "DC02",
+          "domainName": "sub.build.lab",
+          "netbios": "sub",
+          "isRoot": false,
+          "privateIPAddress": "10.10.0.8",
+          "hasPublicIP": false
+        },
+        {
+          "name": "DC03",
+          "domainName": "test.sub.build.lab",
+          "netbios": "test",
+          "isRoot": false,
+          "privateIPAddress": "10.10.0.11",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "standaloneServers": {
+      "value": [
+        {
+          "name": "SRV01",
+          "domainName": "build.lab",
+          "rootOrSub": "root",
+          "privateIPAddress": "10.10.0.7",
+          "hasPublicIP": true
+        },
+        {
+          "name": "SRV02",
+          "domainName": "sub.build.lab",
+          "rootOrSub": "root",
+          "privateIPAddress": "10.10.0.9",
+          "hasPublicIP": false
+        },
+        {
+          "name": "SRV03",
+          "domainName": "sub.build.lab",
+          "rootOrSub": "root",
+          "privateIPAddress": "10.10.0.10",
+          "hasPublicIP": false
+        },
+        {
+          "name": "SRV04",
+          "domainName": "test.sub.build.lab",
+          "rootOrSub": "root",
+          "privateIPAddress": "10.10.0.12",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "certificateAuthorities": {
+      "value": [
+        {
+          "name": "CA01",
+          "domainName": "build.lab",
+          "privateIPAddress": "10.10.0.6",
+          "rootDomainControllerPrivateIp": "10.10.0.5",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "jumpboxConfig": {
+      "value": [
+        {
+          "jumpboxPrivateIPAddress": "10.10.0.13",
+          "connectedPrivateIPAddress": "10.10.0.12"
+        }
+      ]
+    }
+  },
+  "created": "2026-02-09T19:08:34.899Z"
+}

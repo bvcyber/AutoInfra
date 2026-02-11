@@ -1,0 +1,399 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.34.44.8038",
+      "templateHash": "7160154489166306410"
+    }
+  },
+  "parameters": {
+    "virtualMachineSize": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "deployOrBuild": {
+      "type": "string"
+    },
+    "resourceGroupName": {
+      "type": "string"
+    },
+    "privateIPAddress": {
+      "type": "string"
+    },
+    "virtualMachineHostname": {
+      "type": "string"
+    },
+    "parentDomainControllerPrivateIp": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "imageReference": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "osDiskType": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "domainName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "rootDomainNetBIOSName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "enterpriseAdminUsername": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "enterpriseAdminPassword": {
+      "type": "securestring",
+      "defaultValue": ""
+    },
+    "isRoot": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "domainAndEnterpriseAdminUsername": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "rootDomainControllerFQDN": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "jumpboxPrivateIPAddress": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "connectedPrivateIPAddress": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "isVNet10Required": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "isVNet172Required": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "isVNet192Required": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "oldScenarios": {
+      "type": "bool",
+      "defaultValue": false
+    }
+  },
+  "variables": {
+    "$fxv#0": "param(\n    [string]$domainName,\n    [string]$enterpriseAdminUsername,\n    [string]$enterpriseAdminPassword\n)\n\n$securePassword = ConvertTo-SecureString $enterpriseAdminPassword -AsPlainText -Force\n$credential = New-Object System.Management.Automation.PSCredential ($enterpriseAdminUsername, $securePassword)\n\n$logFilePath = \"C:\\Temp\\logfile.txt\"\n\ntry {\n    Write-Host \"Installing Active Directory Domain Services...\"\n    Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools\n\n    Write-Host \"Configuring Root Domain Controller for $domainName...\"\n    Install-ADDSForest -DomainName $domainName -SafeModeAdministratorPassword $securePassword -Force\n    # Wait for services to init\n    #Start-Sleep -Seconds 60\n    Restart-Service NetLogon -EA 0\n    Add-Content -Path $logFilePath -Value \"Successfully Installed ADDS.\"\n} catch {\n    Write-Host \"Failed to configure Root Domain Controller: $_\"\n    Add-Content -Path $logFilePath -Value \"Failed Installing ADDS. $_\"\n}\n\n",
+    "$fxv#1": "param(\n    [string]$domainName,\n    [string]$parentDomainName,\n    [string]$enterpriseAdminUsername,\n    [string]$enterpriseAdminPassword,\n    [string]$rootDomainControllerFQDN\n)\n\n[securestring]$secureAdminPassword = ConvertTo-SecureString $enterpriseAdminPassword -AsPlainText -Force\n[pscredential]$enterpriseAdminCreds = New-Object System.Management.Automation.PSCredential ($enterpriseAdminUsername, $secureAdminPassword)\n[pscredential]$enterpriseAdminCredsWithDomain = New-Object System.Management.Automation.PSCredential ($enterpriseAdminUsername, $secureAdminPassword)\n\n$logFilePath = \"C:\\Temp\\logfile.txt\"\nStart-Transcript -Path $logFilePath -Append\n\ntry {\n    Write-Host \"Installing Active Directory Domain Services...\"\n    Install-WindowsFeature AD-Domain-Services, rsat-adds -IncludeAllSubFeature\n\n    # DNS resolution retry logic\n    $maxAttempts = 10\n    $attempt = 0\n    $dnsResolved = $false\n\n    while ($attempt -lt $maxAttempts -and -not $dnsResolved) {\n        try {\n            Write-Host \"Attempt $($attempt + 1): Resolving $parentDomainName...\"\n            Resolve-DnsName -Name $parentDomainName -ErrorAction Stop | Out-Null\n            $dnsResolved = $true\n            Write-Host \"Successfully resolved $parentDomainName\"\n        } catch {\n            Write-Host \"Could not resolve $parentDomainName. Retrying in 15 seconds...\"\n            Start-Sleep -Seconds 15\n            $attempt++\n        }\n    }\n\n    if (-not $dnsResolved) {\n        throw \"DNS resolution for $parentDomainName failed after $maxAttempts attempts.\"\n    }\n\n    # Wait for parent domain controller to be ready (ping + LDAP bind)\n    $maxWaitSeconds = 3600\n    $interval = 30\n    $elapsed = 0\n    $parentDomainReady = $false\n\n    while ($elapsed -lt $maxWaitSeconds -and -not $parentDomainReady) {\n        try {\n            Write-Host \"Checking if parent domain controller ($rootDomainControllerFQDN) is reachable...\"\n\n            if (Test-Connection -ComputerName $rootDomainControllerFQDN -Count 1 -Quiet) {\n                Write-Host \"Ping successful. Attempting LDAP bind to $parentDomainName...\"\n                $ds = [System.DirectoryServices.ActiveDirectory.Domain]::GetDomain(\n                    (New-Object System.DirectoryServices.ActiveDirectory.DirectoryContext('Domain', $parentDomainName))\n                )\n                Write-Host \"LDAP bind succeeded. Parent domain controller is ready.\"\n                $parentDomainReady = $true\n            } else {\n                Write-Host \"$rootDomainControllerFQDN is not reachable. Retrying...\"\n            }\n        } catch {\n            Write-Host \"Parent domain controller not ready yet: $_\"\n        }\n\n        if (-not $parentDomainReady) {\n            Start-Sleep -Seconds $interval\n            $elapsed += $interval\n        }\n    }\n\n    if (-not $parentDomainReady) {\n        throw \"Timed out waiting for parent domain controller to be ready.\"\n    }\n\n    Start-Sleep -Seconds 300\n    $maxInstallAttempts = 5\n$installAttempt = 0\n$installSuccess = $false\n\nwhile ($installAttempt -lt $maxInstallAttempts -and -not $installSuccess) {\n    try {\n        Write-Host \"Attempting to configure Subdomain Controller (Attempt $($installAttempt + 1))...\"\n        Install-ADDSDomain `\n            -NewDomainName $domainName `\n            -ParentDomainName $parentDomainName `\n            -DomainType \"ChildDomain\" `\n            -InstallDNS `\n            -CreateDNSDelegation `\n            -DomainMode \"WinThreshold\" `\n            -ReplicationSourceDC $rootDomainControllerFQDN `\n            -SafeModeAdministratorPassword $secureAdminPassword `\n            -Force `\n            -Credential $enterpriseAdminCredsWithDomain\n\n        Write-Host \"Install-ADDSDomain completed successfully.\"\n        $installSuccess = $true\n    } catch {\n        Write-Host \"Install-ADDSDomain failed: $_\"\n        if ($installAttempt -lt ($maxInstallAttempts - 1)) {\n            Write-Host \"Retrying in 60 seconds...\"\n            Start-Sleep -Seconds 60\n        }\n        $installAttempt++\n    }\n}\n\nif (-not $installSuccess) {\n    throw \"Install-ADDSDomain failed after $maxInstallAttempts attempts.\"\n}\n\n    Restart-Service NetLogon -Force -EA 0\n    Add-Content -Path $logFilePath -Value \"Successfully installed ADDS for subdomain.\"\n} catch {\n    Write-Host \"Failed to configure Subdomain Controller: $_\"\n    Add-Content -Path $logFilePath -Value \"Failed to install ADDS for subdomain. $_\"\n}\n\nStop-Transcript\n",
+    "$fxv#2": "\nparam(\n    [string]$targetFiles,\n    [string]$domainAdminUsername,\n    [string]$domainAdminPassword,\n    [string]$targetBox\n)\n\n# Convert the password to a secure string\n[securestring]$securedomainAdminPassword = ConvertTo-SecureString $domainAdminPassword -AsPlainText -Force\n\n# Create a PSCredential object using the domain admin username and password\n[pscredential]$domainAdminCreds = New-Object System.Management.Automation.PSCredential ($domainAdminUsername, $securedomainAdminPassword)\n\n$logFilePath = \"C:\\Temp\\logfile.txt\"\n\n# Function that handles creating the directory and downloading the files\nFunction Get-FilesFromStorage {\n    param(\n        [string]$fileURL,\n        [string]$localFilePath,\n        [string]$fileName\n    )\n    \n    New-Item -ItemType Directory -Path $localFilePath -Force\n    $fsConnection = Test-FileStorageConnection -MaxRetries 10\n    if ($fsConnection){\n        try\n        {\n            Add-Content -Path $logFilePath -Value \"Attempting to download $fileName from $fileURL\"\n            Invoke-WebRequest -Uri $fileURL -OutFile $fileName\n        }\n        catch\n        {\n            Add-Content -Path $logFilePath -Value \"Error downloading files: $_\"\n        }\n    }\n}\n\n# check if we have internet connectivity\nFunction Test-FileStorageConnection {\n    param(\n        [int]$MaxRetries\n    )\n    for ($i=0; $i -lt $MaxRetries; $i++){\n        $testConn = Test-NetConnection -ComputerName \"filestorageaccount0.blob.core.windows.net\" -Port 443\n        if ($testConn.TcpTestSucceeded) {\n            Add-Content -Path $logFilePath -Value \"Connected to file storage.\"\n            return $true\n        } else{\n            Add-Content -Path $logFilePath -Value \"No connectivity to file storage yet. Sleeping and retrying..\"\n            Start-Sleep -Seconds 20\n        }\n    }\n    Add-Content -Path $logFilePath -Value \"No connectivity to file storage after $MaxRetries attempts\"\n    return $false\n}\n\n# pass a comma-delimited string and split it\n$targetFilesArray = $targetFiles -split \",\"\n\nforeach ($file in $targetFilesArray) \n{\n    switch ($file) \n    {\n        'module'\n        {\n            Install-WindowsFeature -Name RSAT-AD-PowerShell\n            $fileURL = \"https://filestorageaccount0.blob.core.windows.net/modulecontainer/ADVulnEnvModule.psm1?sp=r&st=2025-01-17T19:27:33Z&se=2026-01-02T03:27:33Z&spr=https&sv=2022-11-02&sr=b&sig=5pa5e0CN83lSMvvAM25HKLY3QPBo8UiSuzokPN%2FPkco%3D\"\n            $localFilePath = \"C:\\Temp\\ADVulnEnvModule\"\n            $fileName = \"C:\\Temp\\ADVulnEnvModule\\ADVulnEnvModule.psm1\"\n            Get-FilesFromStorage -fileURL $fileURL -localFilePath $localFilePath -fileName $fileName\n            Add-Content -Path $logFilePath -Value \"Downloading module\"\n        }\n        'esc' \n        { \n            $fileURL = \"https://filestorageaccount0.blob.core.windows.net/adcs-templates/adcs-files.zip?sp=r&st=2025-01-17T19:32:20Z&se=2026-01-02T03:32:20Z&spr=https&sv=2022-11-02&sr=b&sig=mJZRjz2O71Y%2BmztE1ltiiJVB5pwhiqnzACSnOAW3jcc%3D\"\n            $localFilePath = \"C:\\Temp\"\n            $fileName = \"C:\\Temp\\adcs-files.zip\"\n            Get-FilesFromStorage -fileURL $fileURL -localFilePath $localFilePath -fileName $fileName\n            Add-Content -Path $logFilePath -Value \"Downloading ADCS files..\"\n            Expand-Archive -LiteralPath 'C:\\Temp\\adcs-files.zip' -DestinationPath 'C:\\Temp\\'\n        }\n        'tools'\n        {\n            Add-Content -Path $logFilePath -Value \"Downloading tools\"\n            $fileURL = \"https://filestorageaccount0.blob.core.windows.net/modulecontainer/Windows_attack_tools2.zip?sp=r&st=2025-01-17T19:34:40Z&se=2026-01-02T03:34:40Z&spr=https&sv=2022-11-02&sr=b&sig=o1%2B6lNeldUCZLAtuCyqf%2FpVWZw%2FQNNNFsRJphjcnlw8%3D\"\n            $localFilePath = \"C:\\Temp\\Tools\"\n            Invoke-Command -ComputerName $targetBox -Credential $domainAdminCreds -ScriptBlock {Set-MpPreference -DisableRealTimeMonitoring $true}\n            $fileName = \"C:\\Temp\\PowerView.ps1\"\n            $fileName2 = \"C:\\Temp\\PowerUp.ps1\"\n            Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1\" -Outfile $fileName -Credential $domainAdminCreds\n            Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1\" -Outfile $fileName2 -Credential $domainAdminCreds\n            Invoke-WebRequest -Uri $fileURL -Method \"GET\" -Outfile (-join($localFilePath,\".zip\")) -Credential $domainAdminCreds\n            Expand-Archive -Path C:\\Temp\\Tools.zip -DestinationPath C:\\Temp\\Tools\n\n        }\n        Default \n        { \n            Add-Content -Path $logFilePath -Value \"Error downloading files: No files to download!\"\n        }\n    }\n}\n",
+    "parentDomainName": "[if(not(empty(parameters('domainName'))), join(skip(split(parameters('domainName'), '.'), 1), '.'), '')]",
+    "isIP10": "[startsWith(parameters('privateIPAddress'), '10.10.')]",
+    "isIP172": "[startsWith(parameters('privateIPAddress'), '172.16.')]",
+    "isIP192": "[startsWith(parameters('privateIPAddress'), '192.168.')]",
+    "vName": "[if(parameters('oldScenarios'), 'lab-network', if(variables('isIP10'), 'vnet-10', if(variables('isIP172'), 'vnet-172', 'vnet-192')))]",
+    "subnetName": "[if(parameters('oldScenarios'), 'root-subnet', if(variables('isIP10'), 'vnet-10/subnet-10', if(variables('isIP172'), 'vnet-172/subnet-172', 'vnet-192/subnet-192')))]",
+    "currentNetwork": "[if(startsWith(parameters('privateIPAddress'), '10.10.'), '10', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172', '192'))]",
+    "parentNetwork": "[if(startsWith(parameters('parentDomainControllerPrivateIp'), '10.10.'), '10', if(startsWith(parameters('parentDomainControllerPrivateIp'), '172.16.'), '172', '192'))]",
+    "requiresPeering": "[and(not(empty(parameters('parentDomainControllerPrivateIp'))), not(equals(variables('currentNetwork'), variables('parentNetwork'))))]",
+    "jumpboxNetwork": "[if(empty(parameters('jumpboxPrivateIPAddress')), '00', if(startsWith(parameters('jumpboxPrivateIPAddress'), '10.10.'), '10', if(startsWith(parameters('jumpboxPrivateIPAddress'), '172.16.'), '172', '192')))]",
+    "isJumpbox": "[if(and(and(and(not(empty(parameters('privateIPAddress'))), not(empty(parameters('connectedPrivateIPAddress')))), not(empty(variables('currentNetwork')))), not(empty(variables('jumpboxNetwork')))), and(equals(parameters('privateIPAddress'), parameters('connectedPrivateIPAddress')), not(equals(variables('currentNetwork'), variables('jumpboxNetwork')))), false())]",
+    "dcPeeringRules": "[if(variables('requiresPeering'), createArray(createObject('name', 'Allow-SpecificDC-Communication-Inbound', 'properties', createObject('description', 'Allows inbound traffic between specific DCs', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', parameters('parentDomainControllerPrivateIp'), 'destinationAddressPrefix', parameters('privateIPAddress'), 'access', 'Allow', 'priority', 100, 'direction', 'Inbound')), createObject('name', 'Allow-SpecificDC-Communication-Outbound', 'properties', createObject('description', 'Allows outbound traffic between specific DCs', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', parameters('privateIPAddress'), 'destinationAddressPrefix', parameters('parentDomainControllerPrivateIp'), 'access', 'Allow', 'priority', 100, 'direction', 'Outbound')), createObject('name', 'Allow-IntraSubnet-Inbound', 'properties', createObject('description', 'Allows all inbound traffic within same subnet', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'destinationAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'access', 'Allow', 'priority', 200, 'direction', 'Inbound')), createObject('name', 'Allow-IntraSubnet-Outbound', 'properties', createObject('description', 'Allows all outbound traffic within same subnet', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'destinationAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'access', 'Allow', 'priority', 200, 'direction', 'Outbound')), createObject('name', 'Deny-CrossSubnet-Inbound', 'properties', createObject('description', 'Denies all other inbound cross-subnet traffic', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', if(startsWith(parameters('parentDomainControllerPrivateIp'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('parentDomainControllerPrivateIp'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'destinationAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'access', 'Deny', 'priority', 4000, 'direction', 'Inbound')), createObject('name', 'Deny-CrossSubnet-Outbound', 'properties', createObject('description', 'Denies all other outbound cross-subnet traffic', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', if(startsWith(parameters('privateIPAddress'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('privateIPAddress'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'destinationAddressPrefix', if(startsWith(parameters('parentDomainControllerPrivateIp'), '10.10.'), '10.10.0.0/24', if(startsWith(parameters('parentDomainControllerPrivateIp'), '172.16.'), '172.16.0.0/24', '192.168.0.0/24')), 'access', 'Deny', 'priority', 4000, 'direction', 'Outbound'))), createArray())]",
+    "jumpboxRules": "[if(variables('isJumpbox'), createArray(createObject('name', 'Allow-Jumpbox-Communication-Inbound', 'properties', createObject('description', 'Allows inbound traffic from jumpbox', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', parameters('jumpboxPrivateIPAddress'), 'destinationAddressPrefix', parameters('privateIPAddress'), 'access', 'Allow', 'priority', 200, 'direction', 'Inbound')), createObject('name', 'Allow-Jumpbox-Communication-Outbound', 'properties', createObject('description', 'Allows outbound traffic to jumpbox', 'protocol', '*', 'sourcePortRange', '*', 'destinationPortRange', '*', 'sourceAddressPrefix', parameters('privateIPAddress'), 'destinationAddressPrefix', parameters('jumpboxPrivateIPAddress'), 'access', 'Allow', 'priority', 200, 'direction', 'Outbound'))), createArray())]",
+    "allNSG": "[concat(variables('dcPeeringRules'), variables('jumpboxRules'))]"
+  },
+  "resources": [
+    {
+      "condition": "[not(empty(variables('allNSG')))]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-05-01",
+      "name": "[format('combined-nsg-{0}', parameters('virtualMachineHostname'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": "[variables('allNSG')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2022-11-01",
+      "name": "[format('{0}-NIC', parameters('virtualMachineHostname'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "dnsSettings": {
+          "dnsServers": [
+            "[parameters('privateIPAddress')]",
+            "8.8.8.8"
+          ]
+        },
+        "ipConfigurations": [
+          {
+            "name": "ipconfig",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('privateIPAddress')]",
+              "subnet": {
+                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Network/virtualNetworks/subnets', split(variables('subnetName'), '/')[0], split(variables('subnetName'), '/')[1])]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": "[if(not(empty(variables('allNSG'))), createObject('id', resourceId('Microsoft.Network/networkSecurityGroups', format('combined-nsg-{0}', parameters('virtualMachineHostname')))), null())]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', format('combined-nsg-{0}', parameters('virtualMachineHostname')))]"
+      ]
+    },
+    {
+      "condition": "[variables('requiresPeering')]",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-05-01",
+      "name": "[format('vnet-{0}/peer-to-{1}', variables('currentNetwork'), variables('parentNetwork'))]",
+      "properties": {
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": true,
+        "useRemoteGateways": false,
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-{0}', variables('parentNetwork')))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+      ]
+    },
+    {
+      "condition": "[variables('requiresPeering')]",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-05-01",
+      "name": "[format('vnet-{0}/peer-to-{1}', variables('parentNetwork'), variables('currentNetwork'))]",
+      "properties": {
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": true,
+        "useRemoteGateways": false,
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-{0}', variables('currentNetwork')))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', split(format('vnet-{0}/peer-to-{1}', variables('currentNetwork'), variables('parentNetwork')), '/')[0], split(format('vnet-{0}/peer-to-{1}', variables('currentNetwork'), variables('parentNetwork')), '/')[1])]"
+      ]
+    },
+    {
+      "condition": "[variables('isJumpbox')]",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-05-01",
+      "name": "[format('vnet-{0}/peer-to-{1}', variables('currentNetwork'), variables('jumpboxNetwork'))]",
+      "properties": {
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": true,
+        "useRemoteGateways": false,
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-{0}', variables('jumpboxNetwork')))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployOrBuild'), 'deploy')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-07-01",
+      "name": "[parameters('virtualMachineHostname')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "VM": "[format('RootDC:{0}', parameters('resourceGroupName'))]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('virtualMachineSize')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[parameters('imageReference')]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployOrBuild'), 'build')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2022-11-01",
+      "name": "[parameters('virtualMachineHostname')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "VM": "[format('RootDC:{0}', parameters('resourceGroupName'))]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('virtualMachineSize')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "[parameters('osDiskType')]"
+            }
+          },
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-datacenter-g2",
+            "version": "latest"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[parameters('virtualMachineHostname')]",
+          "adminUsername": "[parameters('enterpriseAdminUsername')]",
+          "adminPassword": "[parameters('enterpriseAdminPassword')]",
+          "windowsConfiguration": {
+            "provisionVMAgent": true
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-NIC', parameters('virtualMachineHostname')))]"
+      ]
+    },
+    {
+      "condition": "[and(parameters('isRoot'), equals(parameters('deployOrBuild'), 'build'))]",
+      "type": "Microsoft.Compute/virtualMachines/runCommands",
+      "apiVersion": "2023-07-01",
+      "name": "[format('{0}/{1}', parameters('virtualMachineHostname'), 'ConfigureRootDC')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "parameters": [
+          {
+            "name": "enterpriseAdminUsername",
+            "value": "[parameters('domainAndEnterpriseAdminUsername')]"
+          },
+          {
+            "name": "enterpriseAdminPassword",
+            "value": "[parameters('enterpriseAdminPassword')]"
+          },
+          {
+            "name": "domainName",
+            "value": "[parameters('domainName')]"
+          },
+          {
+            "name": "rootDomainNetBIOSName",
+            "value": "[parameters('rootDomainNetBIOSName')]"
+          }
+        ],
+        "source": {
+          "script": "[variables('$fxv#0')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineHostname'))]"
+      ]
+    },
+    {
+      "condition": "[and(not(parameters('isRoot')), equals(parameters('deployOrBuild'), 'build'))]",
+      "type": "Microsoft.Compute/virtualMachines/runCommands",
+      "apiVersion": "2023-07-01",
+      "name": "[format('{0}/{1}', parameters('virtualMachineHostname'), 'ConfigureSubDC')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "parameters": [
+          {
+            "name": "enterpriseAdminUsername",
+            "value": "[parameters('domainAndEnterpriseAdminUsername')]"
+          },
+          {
+            "name": "enterpriseAdminPassword",
+            "value": "[parameters('enterpriseAdminPassword')]"
+          },
+          {
+            "name": "domainName",
+            "value": "[split(parameters('domainName'), '.')[0]]"
+          },
+          {
+            "name": "parentDomainName",
+            "value": "[variables('parentDomainName')]"
+          },
+          {
+            "name": "rootDomainNetBIOSName",
+            "value": "[parameters('rootDomainNetBIOSName')]"
+          },
+          {
+            "name": "rootDomainControllerFQDN",
+            "value": "[parameters('rootDomainControllerFQDN')]"
+          }
+        ],
+        "source": {
+          "script": "[variables('$fxv#1')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineHostname'))]",
+        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineHostname'), 'ConfigureRootDC')]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployOrBuild'), 'build')]",
+      "type": "Microsoft.Compute/virtualMachines/runCommands",
+      "apiVersion": "2023-07-01",
+      "name": "[format('{0}/{1}', parameters('virtualMachineHostname'), 'downloadConfigurationFiles')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "parameters": [
+          {
+            "name": "targetFiles",
+            "value": "module"
+          },
+          {
+            "name": "domainAdminUsername",
+            "value": "[parameters('domainAndEnterpriseAdminUsername')]"
+          },
+          {
+            "name": "domainAdminPassword",
+            "value": "[parameters('enterpriseAdminPassword')]"
+          }
+        ],
+        "source": {
+          "script": "[variables('$fxv#2')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineHostname'))]",
+        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineHostname'), 'ConfigureRootDC')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "debugIsRoot": {
+      "type": "bool",
+      "value": "[parameters('isRoot')]"
+    }
+  }
+}

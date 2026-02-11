@@ -1,0 +1,164 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.34.44.8038",
+      "templateHash": "17949876421080477337"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Region to deploy vnet."
+      }
+    },
+    "virtualNetworkAddressPrefix": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "rootSubnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "vnetName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Virtual Network name."
+      }
+    },
+    "oldScenarios": {
+      "type": "bool",
+      "defaultValue": false
+    }
+  },
+  "variables": {
+    "subnetName": "[if(parameters('oldScenarios'), 'root-subnet', if(equals(parameters('vnetName'), 'vnet-10'), 'subnet-10', if(equals(parameters('vnetName'), 'vnet-172'), 'subnet-172', if(equals(parameters('vnetName'), 'vnet-192'), 'subnet-192', ''))))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-05-01",
+      "name": "vnettovnetnsg",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "DenyAllInboundFromVnet172",
+            "properties": {
+              "description": "Denies all inbound traffic from VNet 172",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "172.16.0.0/16",
+              "destinationAddressPrefix": "192.168.0.0/24",
+              "access": "Deny",
+              "priority": 401,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "DenyAllOutboundToVnet172",
+            "properties": {
+              "description": "Denies all outbound traffic to VNet 172",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "192.168.0.0/24",
+              "destinationAddressPrefix": "172.16.0.0/16",
+              "access": "Deny",
+              "priority": 402,
+              "direction": "Outbound"
+            }
+          },
+          {
+            "name": "DenyAllInboundFromVnet192",
+            "properties": {
+              "description": "Denies all inbound traffic from VNet 172",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "192.168.0.0/16",
+              "destinationAddressPrefix": "10.10.0.0/24",
+              "access": "Deny",
+              "priority": 400,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "DenyAllOutboundToVnet192",
+            "properties": {
+              "description": "Denies all outbound traffic to VNet 172",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "10.10.0.0/24",
+              "destinationAddressPrefix": "192.168.0.0/24",
+              "access": "Deny",
+              "priority": 403,
+              "direction": "Outbound"
+            }
+          },
+          {
+            "name": "DenyAllInboundFromVnet10",
+            "properties": {
+              "description": "Denies all inbound traffic from VNet 172",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "172.16.0.0/16",
+              "destinationAddressPrefix": "10.10.0.0/24",
+              "access": "Deny",
+              "priority": 404,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "DenyAllOutboundToVnet10",
+            "properties": {
+              "description": "Denies all outbound traffic to VNet 172",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "10.10.0.0/24",
+              "destinationAddressPrefix": "172.16.0.0/24",
+              "access": "Deny",
+              "priority": 405,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('vnetName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('virtualNetworkAddressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('rootSubnetAddressPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'vnettovnetnsg')]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', 'vnettovnetnsg')]"
+      ]
+    }
+  ]
+}

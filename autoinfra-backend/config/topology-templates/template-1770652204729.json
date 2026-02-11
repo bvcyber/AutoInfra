@@ -1,0 +1,64 @@
+{
+  "id": "template-1770652204729",
+  "name": "Small Environment",
+  "description": "This consists of 1 domain controller and 1 jumpbox",
+  "parameters": {
+    "deployResourceGroupName": {
+      "value": "BuildLab-Template"
+    },
+    "scenarioSelection": {
+      "value": "BUILD"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "scenarioTagValue": {
+      "value": "BUILD"
+    },
+    "expiryTimestamp": {
+      "value": "2026-02-10T15:50:04.729Z"
+    },
+    "enterpriseAdminUsername": {
+      "value": "buildadmin"
+    },
+    "enterpriseAdminPassword": {
+      "value": "Password#123"
+    },
+    "subscriptionID": {
+      "value": ""
+    },
+    "JUMPBOXImageReferenceID": {
+      "value": ""
+    },
+    "rootDomainControllers": {
+      "value": [
+        {
+          "name": "DC01",
+          "domainName": "build.lab",
+          "netbios": "build",
+          "isRoot": true,
+          "privateIPAddress": "10.10.0.9",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "subDomainControllers": {
+      "value": []
+    },
+    "standaloneServers": {
+      "value": []
+    },
+    "certificateAuthorities": {
+      "value": []
+    },
+    "jumpboxConfig": {
+      "value": [
+        {
+          "jumpboxPrivateIPAddress": "10.10.0.10",
+          "connectedPrivateIPAddress": "10.10.0.9"
+        }
+      ]
+    }
+  },
+  "created": "2026-02-09T15:50:04.729Z"
+}

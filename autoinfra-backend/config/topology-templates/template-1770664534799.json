@@ -1,0 +1,72 @@
+{
+  "id": "template-1770664534799",
+  "name": "Small Environment with Workstation",
+  "description": "Same as Small Environment but entry point is Jumpbox to Workstation",
+  "parameters": {
+    "deployResourceGroupName": {
+      "value": "BuildLab-Template"
+    },
+    "scenarioSelection": {
+      "value": "BUILD"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "scenarioTagValue": {
+      "value": "BUILD"
+    },
+    "expiryTimestamp": {
+      "value": "2026-02-10T19:15:34.799Z"
+    },
+    "enterpriseAdminUsername": {
+      "value": "buildadmin"
+    },
+    "enterpriseAdminPassword": {
+      "value": "Password#123"
+    },
+    "subscriptionID": {
+      "value": ""
+    },
+    "JUMPBOXImageReferenceID": {
+      "value": ""
+    },
+    "rootDomainControllers": {
+      "value": [
+        {
+          "name": "DC01",
+          "domainName": "build.lab",
+          "netbios": "build",
+          "isRoot": true,
+          "privateIPAddress": "10.10.0.5",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "subDomainControllers": {
+      "value": []
+    },
+    "standaloneServers": {
+      "value": [
+        {
+          "name": "SRV01",
+          "domainName": "build.lab",
+          "rootOrSub": "root",
+          "privateIPAddress": "10.10.0.9",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "certificateAuthorities": {
+      "value": []
+    },
+    "jumpboxConfig": {
+      "value": [
+        {
+          "jumpboxPrivateIPAddress": "192.168.0.5",
+          "connectedPrivateIPAddress": "10.10.0.9"
+        }
+      ]
+    }
+  },
+  "created": "2026-02-09T19:15:34.799Z"
+}

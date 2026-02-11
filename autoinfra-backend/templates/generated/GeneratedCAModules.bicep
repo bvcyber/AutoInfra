@@ -1,0 +1,62 @@
+
+param location string = ''
+param windowsVmSize string = ''
+param vmDiskType string = ''
+param resourceGroupName string = ''
+param domainAndEnterpriseAdminUsername string = ''
+param enterpriseAdminUsername string = ''
+@secure()
+param enterpriseAdminPassword string = ''
+param deployOrBuild string = ''
+param rootDomainNetBIOSName string = ''
+param rootDomainControllerFQDN string = ''
+param rootDomainControllers array = []
+param subDomainControllers array = []
+param standaloneServers array = []
+param standaloneServerPrivateIp string = ''
+param callerIPAddress string = ''
+param domainControllerPrivateIp string = ''
+param oldScenarios bool = false
+param jumpboxPrivateIPAddress string = ''
+param connectedPrivateIPAddress string = ''
+param isVNet10Required bool = false
+param isVNet192Required bool = false
+param isVNet172Required bool = false
+param osDiskType string = ''
+param jumpboxAdminUsername string = ''
+@secure()
+param jumpboxAdminPassword string = ''
+param kaliSku string = 'kali-2025-2'
+param hasPublicIP bool = false
+
+
+module CA_0 '../base/CertificateAuthority.bicep' = {
+  name: 'CA_0'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    virtualMachineSize: windowsVmSize
+    virtualMachineHostname: 'CA01'
+    resourceGroupName: resourceGroupName
+    osDiskType: vmDiskType
+    privateIPAddress: '172.16.0.7'
+    rootDomainControllerPrivateIp: '172.16.0.5'
+    domainName: 'build.lab'
+    domainAndEnterpriseAdminUsername: domainAndEnterpriseAdminUsername
+    enterpriseAdminUsername: enterpriseAdminUsername
+    enterpriseAdminPassword: enterpriseAdminPassword
+    localAdminUsername: enterpriseAdminUsername
+    localAdminPassword: enterpriseAdminPassword
+    deployOrBuild: deployOrBuild
+    oldScenarios: oldScenarios
+    jumpboxPrivateIPAddress: jumpboxPrivateIPAddress
+    connectedPrivateIPAddress: connectedPrivateIPAddress
+    isVNet10Required: isVNet10Required
+    isVNet172Required: isVNet172Required
+    isVNet192Required: isVNet192Required
+    hasPublicIP: false
+    callerIPAddress: '35.139.98.68'
+    skipPeering: false
+  }
+  dependsOn: []
+}

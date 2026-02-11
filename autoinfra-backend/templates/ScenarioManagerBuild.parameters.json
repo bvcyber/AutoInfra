@@ -1,0 +1,63 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "deployResourceGroupName": {
+            "value": "BuildLab-TYUMU"
+        },
+        "scenarioSelection": {
+            "value": "BUILD"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "scenarioTagValue": {
+            "value": "BUILD"
+        },
+        "expiryTimestamp": {
+            "value": "1770766145"
+        },
+        "enterpriseAdminUsername": {
+            "value": "buildadmin"
+        },
+        "enterpriseAdminPassword": {
+            "value": "Password#123"
+        },
+        "subscriptionID": {
+            "value": ""
+        },
+        "rootDomainControllers": {
+            "value": [
+                {
+                    "name": "DC01",
+                    "domainName": "build.lab",
+                    "netbios": "build",
+                    "isRoot": true,
+                    "privateIPAddress": "10.10.0.9",
+                    "hasPublicIP": false,
+                    "locked": false
+                }
+            ]
+        },
+        "subDomainControllers": {
+            "value": []
+        },
+        "standaloneServers": {
+            "value": []
+        },
+        "jumpboxConfig": {
+            "value": [
+                {
+                    "jumpboxPrivateIPAddress": "10.10.0.10",
+                    "connectedPrivateIPAddress": "10.10.0.9"
+                }
+            ]
+        },
+        "callerIPAddress": {
+            "value": "35.139.98.68"
+        },
+        "kaliSku": {
+            "value": "kali-2025-4"
+        }
+    }
+}

@@ -1,0 +1,89 @@
+{
+  "id": "template-1770663983692",
+  "name": "3 Subnet Range Environment",
+  "description": "Consists of the 3 private subnet ranges, 3 domain controllers, a workstation and a jumpbox. Recommended box for pivoting.",
+  "parameters": {
+    "deployResourceGroupName": {
+      "value": "BuildLab-Template"
+    },
+    "scenarioSelection": {
+      "value": "BUILD"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "scenarioTagValue": {
+      "value": "BUILD"
+    },
+    "expiryTimestamp": {
+      "value": "2026-02-10T19:06:23.692Z"
+    },
+    "enterpriseAdminUsername": {
+      "value": "buildadmin"
+    },
+    "enterpriseAdminPassword": {
+      "value": "Password#123"
+    },
+    "subscriptionID": {
+      "value": ""
+    },
+    "JUMPBOXImageReferenceID": {
+      "value": ""
+    },
+    "rootDomainControllers": {
+      "value": [
+        {
+          "name": "DC01",
+          "domainName": "build.lab",
+          "netbios": "build",
+          "isRoot": true,
+          "privateIPAddress": "10.10.0.5",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "subDomainControllers": {
+      "value": [
+        {
+          "name": "DC02",
+          "domainName": "sub.build.lab",
+          "netbios": "sub",
+          "isRoot": false,
+          "privateIPAddress": "172.16.0.5",
+          "hasPublicIP": false
+        },
+        {
+          "name": "DC03",
+          "domainName": "test.build.lab",
+          "netbios": "test",
+          "isRoot": false,
+          "privateIPAddress": "172.16.0.6",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "standaloneServers": {
+      "value": [
+        {
+          "name": "SRV01",
+          "domainName": "sub.build.lab",
+          "rootOrSub": "root",
+          "privateIPAddress": "172.16.0.7",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "certificateAuthorities": {
+      "value": []
+    },
+    "jumpboxConfig": {
+      "value": [
+        {
+          "jumpboxPrivateIPAddress": "192.168.0.5",
+          "connectedPrivateIPAddress": "172.16.0.7"
+        }
+      ]
+    }
+  },
+  "created": "2026-02-09T19:06:23.692Z"
+}

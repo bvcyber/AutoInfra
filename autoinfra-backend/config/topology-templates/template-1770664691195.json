@@ -1,0 +1,80 @@
+{
+  "id": "template-1770664691195",
+  "name": "Basic ADCS Environment",
+  "description": "",
+  "parameters": {
+    "deployResourceGroupName": {
+      "value": "BuildLab-Template"
+    },
+    "scenarioSelection": {
+      "value": "BUILD"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "scenarioTagValue": {
+      "value": "BUILD"
+    },
+    "expiryTimestamp": {
+      "value": "2026-02-10T19:18:11.195Z"
+    },
+    "enterpriseAdminUsername": {
+      "value": "buildadmin"
+    },
+    "enterpriseAdminPassword": {
+      "value": "Password#123"
+    },
+    "subscriptionID": {
+      "value": ""
+    },
+    "JUMPBOXImageReferenceID": {
+      "value": ""
+    },
+    "rootDomainControllers": {
+      "value": [
+        {
+          "name": "DC01",
+          "domainName": "build.lab",
+          "netbios": "build",
+          "isRoot": true,
+          "privateIPAddress": "172.16.0.5",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "subDomainControllers": {
+      "value": []
+    },
+    "standaloneServers": {
+      "value": [
+        {
+          "name": "SRV01",
+          "domainName": "build.lab",
+          "rootOrSub": "root",
+          "privateIPAddress": "172.16.0.13",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "certificateAuthorities": {
+      "value": [
+        {
+          "name": "CA01",
+          "domainName": "build.lab",
+          "privateIPAddress": "172.16.0.7",
+          "rootDomainControllerPrivateIp": "172.16.0.5",
+          "hasPublicIP": false
+        }
+      ]
+    },
+    "jumpboxConfig": {
+      "value": [
+        {
+          "jumpboxPrivateIPAddress": "172.16.0.24",
+          "connectedPrivateIPAddress": "172.16.0.13"
+        }
+      ]
+    }
+  },
+  "created": "2026-02-09T19:18:11.195Z"
+}

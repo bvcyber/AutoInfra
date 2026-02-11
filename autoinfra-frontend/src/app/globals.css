@@ -1,0 +1,295 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  .base-border {
+    @apply border-4 border-black border-double;
+  }
+
+  .base-text-color {
+    @apply text-neutral-50;
+  }
+
+  .darker-text-color {
+    @apply text-neutral-400;
+  }
+
+  .selected-background-color {
+    @apply bg-red-900;
+  }
+
+  .base-background-color {
+    @apply bg-slate-900;
+  }
+
+  .lighter-background-color {
+    @apply bg-slate-800;
+  }
+
+  .even-lighter-background-color {
+    @apply bg-slate-700;
+  }
+
+  .base-title {
+    @apply text-2xl font-extrabold text-left;
+  }
+
+  .base-title-centered {
+    @apply text-2xl font-extrabold text-center;
+  }
+
+  .pinging-red-loader {
+    @apply h-10 w-10 animate-ping rounded-full border-4 border-double border-red-500;
+  }
+
+  .spinning-red-loader {
+    @apply h-10 w-10 animate-spin rounded-full border-4 border-double border-t-transparent border-red-500;
+  }
+
+  /* Form Components */
+  .form-section {
+    @apply p-6 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl;
+  }
+
+  .form-section-title {
+    @apply text-lg font-semibold text-slate-50 mb-4;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-slate-300 mb-2;
+  }
+
+  .form-input {
+    @apply w-full bg-slate-900/50 text-white p-3 rounded-lg border border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200;
+  }
+
+  .form-select {
+    @apply w-full bg-slate-900/50 text-white p-3 rounded-lg border border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200;
+  }
+
+  .form-input-error {
+    @apply w-full even-lighter-background-color text-white p-2 rounded border border-red-500 focus:border-blue-500 focus:outline-none;
+  }
+
+  .error-text {
+    @apply text-xs text-red-400 mt-1;
+  }
+
+  .help-text {
+    @apply text-xs text-neutral-400 mt-1;
+  }
+
+  /* Button Components */
+  .btn-primary {
+    @apply px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg shadow-lg shadow-blue-900/50 transition-all duration-200 font-medium;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg shadow-lg shadow-slate-900/50 transition-all duration-200 font-medium;
+  }
+
+  .btn-success {
+    @apply px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-lg shadow-lg shadow-emerald-900/50 transition-all duration-200 font-medium;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg shadow-lg shadow-red-900/50 transition-all duration-200 font-medium;
+  }
+
+  .btn-large {
+    @apply px-8 py-3 font-semibold rounded-lg;
+  }
+
+  /* Layout Components */
+  .page-container {
+    @apply flex flex-col w-full max-w-none;
+  }
+
+  .responsive-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 items-end;
+  }
+
+  .responsive-two-col {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-4;
+  }
+
+  .flex-responsive {
+    @apply flex flex-col xl:flex-row gap-6;
+  }
+
+  /* ReactFlow Container */
+  .reactflow-container {
+    @apply w-full h-[60vh] min-h-[400px] max-h-[800px] border border-slate-700/50 rounded-xl bg-slate-900/30 backdrop-blur-sm shadow-2xl;
+  }
+
+  /* Template Gallery */
+  .template-card {
+    @apply p-5 border rounded-xl cursor-pointer transition-all duration-300 border-slate-700/50 hover:border-blue-400 hover:shadow-xl hover:scale-[1.02] bg-slate-800/30 backdrop-blur-sm;
+  }
+
+  .template-card-selected {
+    @apply p-5 border-2 rounded-xl cursor-pointer transition-all duration-300 border-blue-500 bg-blue-900/30 shadow-xl shadow-blue-900/30 scale-[1.02] backdrop-blur-sm;
+  }
+
+  .template-tag {
+    @apply px-2 py-1 rounded-full text-xs;
+  }
+
+  .template-tag-blue {
+    @apply px-2 py-1 bg-blue-900/50 text-blue-300 rounded-full text-xs;
+  }
+
+  .template-tag-purple {
+    @apply px-2 py-1 bg-purple-900/50 text-purple-300 rounded-full text-xs;
+  }
+
+  .template-tag-green {
+    @apply px-2 py-1 bg-green-900/50 text-green-300 rounded-full text-xs;
+  }
+
+  .template-tag-orange {
+    @apply px-2 py-1 bg-orange-900/50 text-orange-300 rounded-full text-xs;
+  }
+
+  .environment-card {
+    @apply p-2 rounded-lg border border-neutral-700 hover:lighter-background-color transition-colors;
+  }
+
+  .environment-name {
+    @apply text-[15px] font-medium text-neutral-300 truncate;
+  }
+
+  .text-loading {
+    @apply text-center text-neutral-400 p-4;
+  }
+
+  .card-container {
+    @apply shadow-2xl shadow-black/50 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-700/50;
+  }
+
+  .nav-container {
+    @apply flex flex-col justify-between max-h-screen gap-y-0 p-2 container;
+  }
+
+  .nav-link {
+    @apply shadow-sm shadow-black/30 px-5 py-3 hover:text-slate-50 text-center rounded-xl transition-all duration-300 hover:bg-slate-800/70 hover:scale-105 text-sm font-semibold text-slate-400 hover:shadow-lg;
+  }
+
+  .heading-lg {
+    @apply text-neutral-50 text-2xl font-extrabold;
+  }
+
+  .heading-md {
+    @apply text-neutral-50 text-xl font-extrabold;
+  }
+
+  .heading-sm {
+    @apply text-neutral-50 text-lg font-extrabold;
+  }
+
+  .base-button {
+    @apply shadow-sm shadow-black px-5 py-3 hover:text-neutral-50 text-center rounded-lg transition ease-in-out duration-500 hover:lighter-background-color text-sm font-extrabold text-neutral-400;
+  }
+
+  .current-environment-info-container {
+    @apply block base-text-color font-bold w-max text-xl;
+  }
+
+  .current-environment-info-display {
+    @apply darker-text-color text-lg;
+  }
+
+  .info-and-config-tab-group-container {
+    @apply base-text-color;
+  }
+
+  .info-and-config-tab-panels {
+    @apply mt-5 text-center base-text-color;
+  }
+
+  .info-and-config-attacks-title-color {
+    @apply text-neutral-50;
+  }
+
+  .info-and-config-attacks-info-panel {
+    @apply base-text-color pl-1 text-sm w-[95%] border-4 border-double border-black bg-slate-500/20 w-[95%] text-left;
+  }
+
+  .info-and-config-configuration-panel {
+    @apply base-text-color pl-1 text-sm base-border lighter-background-color w-[95%] p-4 mb-2;
+  }
+
+  .deployed-environment-scenario {
+    @apply text-[15px] font-medium base-text-color truncate;
+  }
+
+  .deployed-environment-id {
+    @apply text-[20px] text-neutral-400 truncate mb-2;
+  }
+
+  .deployed-environment-status-deploying {
+    @apply text-blue-400;
+  }
+
+  .deployed-environment-status-deployed {
+    @apply text-green-400;
+  }
+
+  .deployed-environment-status-saving {
+    @apply text-yellow-400;
+  }
+
+  .deployed-environment-status-destroying {
+    @apply text-red-400;
+  }
+
+  .deployed-environment-interact-label {
+    @apply px-3 py-1 bg-slate-900 text-neutral-200 rounded-lg text-sm;
+  }
+
+  .deployed-environment-selected-label {
+    @apply px-3 py-1 bg-green-800 text-neutral-200 rounded-lg text-sm cursor-default;
+  }
+
+  /* Azure Status Indicators */
+  .azure-status-indicator-red {
+    @apply w-2.5 h-2.5 rounded-full bg-red-500;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.8), 0 0 12px rgba(239, 68, 68, 0.4);
+  }
+
+  .azure-status-indicator-green {
+    @apply w-2.5 h-2.5 rounded-full bg-green-500;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.8), 0 0 12px rgba(34, 197, 94, 0.4);
+  }
+
+  .azure-status-indicator-loading {
+    @apply w-2.5 h-2.5 rounded-full bg-gray-400;
+  }
+
+  .template-manager-title {
+    @apply text-xl font-bold base-text-color;
+  }
+
+  .config-form-input-border {
+    @apply border border-neutral-900 rounded;
+  }
+
+  .config-form-input {
+    @apply config-form-input-border lighter-background-color base-text-color;
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "template-1770664810561",
+  "name": "No Jumpbox - DC Only",
+  "description": "",
+  "parameters": {
+    "deployResourceGroupName": {
+      "value": "BuildLab-Template"
+    },
+    "scenarioSelection": {
+      "value": "BUILD"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "scenarioTagValue": {
+      "value": "BUILD"
+    },
+    "expiryTimestamp": {
+      "value": "2026-02-10T19:20:10.561Z"
+    },
+    "enterpriseAdminUsername": {
+      "value": "buildadmin"
+    },
+    "enterpriseAdminPassword": {
+      "value": "Password#123"
+    },
+    "subscriptionID": {
+      "value": ""
+    },
+    "JUMPBOXImageReferenceID": {
+      "value": ""
+    },
+    "rootDomainControllers": {
+      "value": [
+        {
+          "name": "DC01",
+          "domainName": "build.lab",
+          "netbios": "build",
+          "isRoot": true,
+          "privateIPAddress": "10.10.0.7",
+          "hasPublicIP": true
+        }
+      ]
+    },
+    "subDomainControllers": {
+      "value": []
+    },
+    "standaloneServers": {
+      "value": []
+    },
+    "certificateAuthorities": {
+      "value": []
+    },
+    "jumpboxConfig": {
+      "value": []
+    }
+  },
+  "created": "2026-02-09T19:20:10.561Z"
+}

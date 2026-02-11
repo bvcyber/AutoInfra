@@ -1,0 +1,82 @@
+{
+  "ADCS": {
+    "ESC1": {
+      "title": "ADCS ESC1",
+      "info": "Domain User to Domain Admin escalation via misconfigured certificate templates.",
+      "requiresUser": false,
+      "requiredMachineTypes": ["CA"]
+    },
+    "ESC3": {
+      "title": "ADCS ESC3",
+      "info": "Domain User to Domain Admin escalation via misconfigured certificate templates.",
+      "requiresUser": false,
+      "requiredMachineTypes": ["CA"]
+    },
+    "ESC4": {
+      "title": "ADCS ESC4",
+      "info": "Domain User to Domain Admin escalation via misconfigured certificate templates.",
+      "requiresUser": false,
+      "requiredMachineTypes": ["CA"]
+    }
+  },
+  "UserAttacks": {
+    "Kerberoasting": {
+      "title": "Kerberoasting",
+      "info": "Makes a target user have a SPN in order to acquire a TGT from them.",
+      "requiresUser": true,
+      "requiredMachineTypes": ["RootDC", "SubDC"]
+    },
+    "ASREPRoasting": {
+      "title": "AS-REP Roasting",
+      "info": "Steal domain credentials by abusing a user with Kerberos pre-auth disabled.",
+      "requiresUser": true,
+      "requiredMachineTypes": ["RootDC", "SubDC"]
+    },
+    "UserConstrainedDelegation": {
+      "title": "User Constrained Delegation",
+      "info": "Makes a target user have constrained delegation on a spn with the DC",
+      "requiresUser": true,
+      "requiredMachineTypes": ["RootDC", "SubDC"]
+    },
+    "ComputerConstrainedDelegation": {
+      "title": "Computer Constrained Delegation",
+      "info": "Makes a target computer have constrained delegation on a spn with the DC",
+      "requiresUser": true,
+      "requiresTargetBox": true,
+      "requiredMachineTypes": ["RootDC", "SubDC"]
+    },
+    "AddCredsForMimikatz": {
+      "title": "Add User Creds for Mimikatz Dump",
+      "info": "Injects a target user's creds on target computer.",
+      "requiresUser": true,
+      "requiresTargetBox": true,
+      "requiresSingleUserPassword": true,
+      "requiredMachineTypes": ["Workstation"]
+    },
+    "LocalPrivesc1": {
+      "title": "Local Privilege Escalation 1",
+      "info": "Gives target user write access to a service's binpath.",
+      "requiresUser": true,
+      "requiredMachineTypes": ["Workstation"]
+    },
+    "LocalPrivesc2": {
+      "title": "Local Privilege Escalation 2",
+      "info": "Gives target user write access path of service that is unquoted.",
+      "requiresUser": true,
+      "requiredMachineTypes": ["Workstation"]
+    },
+    "LocalPrivesc3": {
+      "title": "Local Privilege Escalation 3",
+      "info": "Gives target user ability to runas admin.",
+      "requiresUser": true,
+      "requiredMachineTypes": ["Workstation"]
+    },
+    "ACLs": {
+      "title": "ACLs",
+      "info": "Gives one user GenericAll permissions over another user",
+      "requiresGrantingUser": true,
+      "requiresReceivingUser": true,
+      "requiredMachineTypes": ["RootDC", "SubDC"]
+    }
+  }
+}
