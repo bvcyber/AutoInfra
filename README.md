@@ -48,13 +48,6 @@ Auto Infra is an infrastructure management platform designed to rapidly deploy, 
 - **Scenario Versioning**: Save deployment states with per-machine version management
 - **Resource Management**: Time-limited deployments with extensible timeouts and automated cleanup
 
-### Supported Attack Vectors
-
-- **ADCS**: ESC1, ESC3, ESC4 certificate template vulnerabilities
-- **Kerberos**: Kerberoasting, AS-REP Roasting, Constrained Delegation
-- **Local Privilege Escalation**: Service binary path abuse, unquoted service paths, RunAs
-- **ACL Attacks**: GenericAll permission abuse
-
 ## Prerequisites
 
 - **Docker & Docker Compose**: Container runtime ([Install Guide](https://docs.docker.com/compose/install/))
