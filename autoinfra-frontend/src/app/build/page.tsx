@@ -337,14 +337,14 @@ const TemplateGallery: React.FC<{
               setSearchTerm(e.target.value)
               setPage(0) // Reset to first page on search
             }}
-            className="bg-slate-900/50 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+            className="bg-base-100/50 border border-base-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all"
           />
 
           {templates.length > 3 && (
             <button
               type="button"
               onClick={onOpenTemplateManager}
-              className="text-sm text-blue-400 hover:text-blue-300"
+              className="text-sm text-primary hover:text-primary"
             >
               View All ({templates.length})
             </button>
@@ -363,11 +363,11 @@ const TemplateGallery: React.FC<{
             }
             onClick={() => onSelect(template)}
           >
-            <h3 className="font-bold text-lg text-slate-50">
+            <h3 className="font-bold text-lg text-base-content">
               {template.name}
             </h3>
-            <p className="text-sm text-slate-400">{template.description}</p>
-            <div className="mt-2 text-xs text-slate-500">
+            <p className="text-sm text-base-content/60">{template.description}</p>
+            <div className="mt-2 text-xs text-base-content0">
               Created: {new Date(template.created).toLocaleDateString()}
             </div>
             <div className="mt-2 flex flex-wrap gap-1">
@@ -405,14 +405,14 @@ const TemplateGallery: React.FC<{
             onClick={() => setPage((prev) => Math.max(0, prev - 1))}
             className={`px-3 py-1 rounded-lg transition-all ${
               page === 0
-                ? "bg-slate-800/50 text-slate-500 cursor-not-allowed"
-                : "bg-slate-700 hover:bg-slate-600 text-slate-200"
+                ? "bg-base-200/50 text-base-content0 cursor-not-allowed"
+                : "bg-base-300 hover:bg-base-300 text-base-content/80"
             }`}
           >
             &lt;
           </button>
 
-          <span className="text-sm px-3 py-1 text-slate-400">
+          <span className="text-sm px-3 py-1 text-base-content/60">
             Page {page + 1} of {pageCount}
           </span>
 
@@ -421,8 +421,8 @@ const TemplateGallery: React.FC<{
             onClick={() => setPage((prev) => Math.min(pageCount - 1, prev + 1))}
             className={`px-3 py-1 rounded-lg transition-all ${
               page >= pageCount - 1
-                ? "bg-slate-800/50 text-slate-500 cursor-not-allowed"
-                : "bg-slate-700 hover:bg-slate-600 text-slate-200"
+                ? "bg-base-200/50 text-base-content0 cursor-not-allowed"
+                : "bg-base-300 hover:bg-base-300 text-base-content/80"
             }`}
           >
             &gt;
@@ -470,12 +470,12 @@ const TemplateManager: React.FC<{
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <div className="bg-slate-900/95 backdrop-blur-md p-6 rounded-xl border border-slate-700/50 w-full max-w-4xl max-h-[80vh] overflow-y-auto shadow-2xl">
+      <div className="bg-base-100/95 backdrop-blur-md p-6 rounded-xl border border-base-300/50 w-full max-w-4xl max-h-[80vh] overflow-y-auto shadow-2xl">
         <div className="flex justify-between items-center mb-4">
           <h2 className="template-manager-title">Template Manager</h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors text-2xl"
+            className="text-base-content/60 hover:text-white transition-colors text-2xl"
           >
             &times;
           </button>
@@ -488,7 +488,7 @@ const TemplateManager: React.FC<{
               placeholder="Search templates..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-800/50 border border-slate-600 rounded-lg px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+              className="w-full bg-base-200/50 border border-base-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all"
             />
           </div>
 
@@ -496,7 +496,7 @@ const TemplateManager: React.FC<{
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as "name" | "created")}
-              className="bg-slate-800/50 border border-slate-600 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none transition-all"
+              className="bg-base-200/50 border border-base-300 rounded-lg px-3 py-2 focus:border-primary focus:outline-none transition-all"
             >
               <option value="name">Name</option>
               <option value="created">Date</option>
@@ -504,7 +504,7 @@ const TemplateManager: React.FC<{
 
             <button
               onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
-              className="bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-lg px-3 py-2 transition-all"
+              className="bg-base-300 hover:bg-base-300 border border-base-300 rounded-lg px-3 py-2 transition-all"
             >
               {sortDir === "asc" ? "↑" : "↓"}
             </button>
@@ -515,14 +515,14 @@ const TemplateManager: React.FC<{
           {filteredTemplates.map((template) => (
             <div
               key={template.id}
-              className="p-4 border border-slate-700/50 rounded-xl hover:border-blue-400 transition-all duration-300 bg-slate-800/30 backdrop-blur-sm hover:shadow-lg"
+              className="p-4 border border-base-300/50 rounded-xl hover:border-primary transition-all duration-300 bg-base-200/30 backdrop-blur-sm hover:shadow-lg"
             >
               <div className="flex justify-between">
                 <div>
-                  <h3 className="font-bold text-lg text-slate-50">
+                  <h3 className="font-bold text-lg text-base-content">
                     {template.name}
                   </h3>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-base-content/60">
                     {template.description}
                   </p>
                 </div>
@@ -533,7 +533,7 @@ const TemplateManager: React.FC<{
                       onSelect(template)
                       onClose()
                     }}
-                    className="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm"
+                    className="px-3 py-1 bg-primary hover:bg-primary rounded text-sm"
                   >
                     Load
                   </button>
@@ -542,21 +542,21 @@ const TemplateManager: React.FC<{
                       setTemplateToDelete(template)
                       setDeleteModalOpen(true)
                     }}
-                    className="px-3 py-1 bg-red-900 hover:bg-red-800 rounded text-sm"
+                    className="px-3 py-1 bg-error hover:bg-error/90 rounded text-sm"
                   >
                     Delete
                   </button>
                 </div>
               </div>
 
-              <div className="mt-2 text-xs text-slate-500">
+              <div className="mt-2 text-xs text-base-content0">
                 Created: {new Date(template.created).toLocaleDateString()}
               </div>
 
               <div className="mt-2 flex flex-wrap gap-1">
                 {template.parameters.rootDomainControllers?.value?.length >
                   0 && (
-                  <span className="px-2 py-1 bg-blue-900/50 text-blue-300 rounded-full text-xs">
+                  <span className="px-2 py-1 bg-primary/50 text-primary rounded-full text-xs">
                     {template.parameters.rootDomainControllers.value.length}{" "}
                     Root DC
                   </span>
@@ -569,7 +569,7 @@ const TemplateManager: React.FC<{
                   </span>
                 )}
                 {template.parameters.standaloneServers?.value?.length > 0 && (
-                  <span className="px-2 py-1 bg-green-900/50 text-green-300 rounded-full text-xs">
+                  <span className="px-2 py-1 bg-success/50 text-success rounded-full text-xs">
                     {template.parameters.standaloneServers.value.length} Servers
                   </span>
                 )}
@@ -583,7 +583,7 @@ const TemplateManager: React.FC<{
           ))}
 
           {filteredTemplates.length === 0 && (
-            <div className="text-center py-8 text-slate-400">
+            <div className="text-center py-8 text-base-content/60">
               No templates found matching your search.
             </div>
           )}
@@ -2639,8 +2639,8 @@ export default function BuildPage() {
           }}
           className={`px-6 py-3 rounded-lg font-semibold transition-all ${
             !isUpdateMode
-              ? "bg-blue-600 text-white shadow-lg"
-              : "bg-neutral-700 text-neutral-300 hover:bg-neutral-600"
+              ? "bg-primary text-white shadow-lg"
+              : "bg-base-300 text-base-content/80 hover:bg-base-300"
           }`}
         >
           New Build
@@ -2658,7 +2658,7 @@ export default function BuildPage() {
           className={`px-6 py-3 rounded-lg font-semibold transition-all ${
             isUpdateMode
               ? "bg-purple-600 text-white shadow-lg"
-              : "bg-neutral-700 text-neutral-300 hover:bg-neutral-600"
+              : "bg-base-300 text-base-content/80 hover:bg-base-300"
           }`}
         >
           Update Existing
@@ -2723,15 +2723,15 @@ export default function BuildPage() {
                 {index > 0 && <div className={`w-8 h-0.5 ${
                   ["select", "deploy-base", "add-nodes", "deploy-update", "test", "save"].indexOf(updatePhase) >= index
                     ? "bg-purple-500"
-                    : "bg-neutral-600"
+                    : "bg-base-300"
                 }`} />}
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
                     updatePhase === phase
                       ? "bg-purple-600 text-white font-bold"
                       : ["select", "deploy-base", "add-nodes", "deploy-update", "test", "save"].indexOf(updatePhase) > ["select", "deploy-base", "add-nodes", "deploy-update", "test", "save"].indexOf(phase)
-                        ? "bg-green-600 text-white"
-                        : "bg-neutral-700 text-neutral-400"
+                        ? "bg-success text-white"
+                        : "bg-base-300 text-base-content/60"
                   }`}
                 >
                   {index + 1}
@@ -2739,7 +2739,7 @@ export default function BuildPage() {
               </div>
             ))}
           </div>
-          <div className="flex justify-center gap-4 text-xs text-neutral-400 mb-6">
+          <div className="flex justify-center gap-4 text-xs text-base-content/60 mb-6">
             <span>Select</span>
             <span>Deploy</span>
             <span>Add Nodes</span>
@@ -2750,15 +2750,15 @@ export default function BuildPage() {
 
           {/* Inline Deployment Progress - Show while deploying in update mode */}
           {isUpdateDeploying && (updatePhase === "deploy-base" || updatePhase === "deploy-update") && (
-            <div className="bg-neutral-800 border border-neutral-600 rounded-lg p-4 mb-6">
-              <h4 className="text-lg font-semibold text-neutral-100 mb-3 flex items-center gap-2">
+            <div className="bg-base-200 border border-base-300 rounded-lg p-4 mb-6">
+              <h4 className="text-lg font-semibold text-base-content mb-3 flex items-center gap-2">
                 <svg className="animate-spin h-5 w-5 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 {updatePhase === "deploy-base" ? "Deploying Base Scenario..." : "Deploying Update..."}
               </h4>
-              <p className="text-neutral-400 text-sm mb-4">
+              <p className="text-base-content/60 text-sm mb-4">
                 Please wait while your infrastructure is being deployed. This may take several minutes.
               </p>
               
@@ -2769,18 +2769,18 @@ export default function BuildPage() {
                     <div
                       key={item.name}
                       className={`flex items-center justify-between p-2 rounded ${
-                        item.status === "succeeded" ? "bg-green-900/30 border border-green-700/50" :
-                        item.status === "running" ? "bg-blue-900/30 border border-blue-700/50" :
-                        item.status === "failed" ? "bg-red-900/30 border border-red-700/50" :
-                        "bg-neutral-700/30 border border-neutral-600/50"
+                        item.status === "succeeded" ? "bg-success/30 border border-success/50" :
+                        item.status === "running" ? "bg-primary/30 border border-primary/50" :
+                        item.status === "failed" ? "bg-error/30 border border-error/50" :
+                        "bg-base-300/30 border border-base-300/50"
                       }`}
                     >
                       <span className="font-mono text-sm">{item.name}</span>
                       <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                        item.status === "succeeded" ? "bg-green-700 text-green-100" :
-                        item.status === "running" ? "bg-blue-700 text-blue-100" :
-                        item.status === "failed" ? "bg-red-700 text-red-100" :
-                        "bg-neutral-600 text-neutral-300"
+                        item.status === "succeeded" ? "bg-success text-success-content" :
+                        item.status === "running" ? "bg-primary text-primary-content" :
+                        item.status === "failed" ? "bg-error text-error-content" :
+                        "bg-base-300 text-base-content/80"
                       }`}>
                         {item.status === "succeeded" ? "Completed" :
                          item.status === "running" ? "In Progress" :
@@ -2792,7 +2792,7 @@ export default function BuildPage() {
               )}
               
               {updateDeploymentItems.length === 0 && (
-                <div className="text-neutral-500 text-sm italic">
+                <div className="text-base-content0 text-sm italic">
                   Initializing deployment...
                 </div>
               )}
@@ -2868,11 +2868,11 @@ export default function BuildPage() {
                     key={deployment.deploymentId}
                     type="button"
                     onClick={() => handleSelectDeployment(deployment.deploymentId)}
-                    className="w-full text-left p-3 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg transition-colors"
+                    className="w-full text-left p-3 bg-base-200 hover:bg-base-300 border border-base-300 rounded-lg transition-colors"
                   >
                     <div className="flex justify-between items-center">
                       <span className="font-mono text-cyan-400">{deployment.deploymentId}</span>
-                      <span className="text-gray-400 text-sm">{deployment.location}</span>
+                      <span className="text-base-content/60 text-sm">{deployment.location}</span>
                     </div>
                   </button>
                 ))}
@@ -2895,8 +2895,8 @@ export default function BuildPage() {
 
           {/* Add Nodes phase info */}
           {updatePhase === "add-nodes" && (
-            <div className="bg-green-900/30 border border-green-600/50 rounded-lg p-4 mt-4">
-              <p className="text-green-200 text-sm">
+            <div className="bg-success/30 border border-success/50 rounded-lg p-4 mt-4">
+              <p className="text-success-content text-sm">
                 <strong>Base scenario deployed.</strong> You can now add new nodes using the form below.
                 When ready, click "Deploy Update" to add the new nodes to the running environment.
               </p>
@@ -2905,8 +2905,8 @@ export default function BuildPage() {
 
           {/* Test phase info - after update deployment completes */}
           {updatePhase === "test" && (
-            <div className="bg-blue-900/30 border border-blue-600/50 rounded-lg p-4 mt-4">
-              <p className="text-blue-200 text-sm">
+            <div className="bg-primary/30 border border-primary/50 rounded-lg p-4 mt-4">
+              <p className="text-primary-content text-sm">
                 <strong>New nodes deployed.</strong> Your new nodes are now running in the environment.
                 Test that everything works correctly, then click "Proceed to Save" to capture VM images
                 and save the updated scenario permanently.
@@ -2928,7 +2928,7 @@ export default function BuildPage() {
       )}
 
       {fileUploadError && (
-        <div className="text-red-500 mb-4">{fileUploadError}</div>
+        <div className="text-error mb-4">{fileUploadError}</div>
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col w-full gap-6">
@@ -3007,8 +3007,8 @@ export default function BuildPage() {
 
           {/* In update mode, show locked state message when not in add-nodes phase */}
           {isUpdateMode && updatePhase !== "add-nodes" && (
-            <div className="bg-neutral-800/50 border border-neutral-600 rounded-lg p-4 mb-4">
-              <div className="flex items-center gap-2 text-neutral-400">
+            <div className="bg-base-200/50 border border-base-300 rounded-lg p-4 mb-4">
+              <div className="flex items-center gap-2 text-base-content/60">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m0 0v2m0-2h2m-2 0H9m3-10V4m0 0a4 4 0 00-4 4v1m4-5a4 4 0 014 4v1m-8 8h8a2 2 0 002-2v-3a2 2 0 00-2-2h-8a2 2 0 00-2 2v3a2 2 0 002 2z" />
                 </svg>
@@ -3160,8 +3160,8 @@ export default function BuildPage() {
                     }
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                  <span className="ml-2 text-sm text-gray-300">
+                  <div className="w-11 h-6 bg-base-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-base-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <span className="ml-2 text-sm text-base-content/80">
                     {formData.hasPublicIP ? "Yes" : "No"}
                   </span>
                 </label>
@@ -3400,7 +3400,7 @@ export default function BuildPage() {
           open={showTemplateDialog}
           onClose={() => setShowTemplateDialog(false)}
         >
-          <div className="bg-neutral-800 p-6 rounded-lg w-full max-w-md">
+          <div className="bg-base-200 p-6 rounded-lg w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Save Template</h2>
             <div className="mb-4">
               <label className="block mb-2">Template Name</label>
@@ -3408,7 +3408,7 @@ export default function BuildPage() {
                 type="text"
                 value={templateName}
                 onChange={(e) => setTemplateName(e.target.value)}
-                className="w-full bg-neutral-700 text-white p-2 rounded"
+                className="w-full bg-base-300 text-white p-2 rounded"
                 placeholder="My Template"
               />
             </div>
@@ -3417,7 +3417,7 @@ export default function BuildPage() {
               <textarea
                 value={templateDescription}
                 onChange={(e) => setTemplateDescription(e.target.value)}
-                className="w-full bg-neutral-700 text-white p-2 rounded h-24"
+                className="w-full bg-base-300 text-white p-2 rounded h-24"
                 placeholder="Describe this template..."
               />
             </div>
@@ -3425,14 +3425,14 @@ export default function BuildPage() {
               <button
                 type="button"
                 onClick={() => setShowTemplateDialog(false)}
-                className="px-4 py-2 bg-neutral-600 text-white rounded"
+                className="px-4 py-2 bg-base-300 text-white rounded"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={saveTemplate}
-                className="px-4 py-2 bg-green-600 text-white rounded"
+                className="px-4 py-2 bg-success text-white rounded"
               >
                 Save Template
               </button>

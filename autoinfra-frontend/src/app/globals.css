@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950;
+    @apply bg-gradient-to-br from-base-100 via-neutral to-base-100;
   }
 
   html {
@@ -18,31 +18,31 @@
 
 @layer components {
   .base-border {
-    @apply border-4 border-black border-double;
+    @apply border-4 border-base-300 border-double;
   }
 
   .base-text-color {
-    @apply text-neutral-50;
+    @apply text-base-content;
   }
 
   .darker-text-color {
-    @apply text-neutral-400;
+    @apply text-base-content/60;
   }
 
   .selected-background-color {
-    @apply bg-red-900;
+    @apply bg-primary/20;
   }
 
   .base-background-color {
-    @apply bg-slate-900;
+    @apply bg-base-100;
   }
 
   .lighter-background-color {
-    @apply bg-slate-800;
+    @apply bg-base-200;
   }
 
   .even-lighter-background-color {
-    @apply bg-slate-700;
+    @apply bg-base-300;
   }
 
   .base-title {
@@ -53,62 +53,62 @@
     @apply text-2xl font-extrabold text-center;
   }
 
-  .pinging-red-loader {
-    @apply h-10 w-10 animate-ping rounded-full border-4 border-double border-red-500;
+  .pinging-loader {
+    @apply h-10 w-10 animate-ping rounded-full border-4 border-double border-primary;
   }
 
-  .spinning-red-loader {
-    @apply h-10 w-10 animate-spin rounded-full border-4 border-double border-t-transparent border-red-500;
+  .spinning-loader {
+    @apply h-10 w-10 animate-spin rounded-full border-4 border-double border-t-transparent border-primary;
   }
 
   /* Form Components */
   .form-section {
-    @apply p-6 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl;
+    @apply p-6 bg-base-200/50 backdrop-blur-sm rounded-xl border border-base-300/50 shadow-xl;
   }
 
   .form-section-title {
-    @apply text-lg font-semibold text-slate-50 mb-4;
+    @apply text-lg font-semibold text-base-content mb-4;
   }
 
   .form-label {
-    @apply block text-sm font-medium text-slate-300 mb-2;
+    @apply block text-sm font-medium text-base-content/80 mb-2;
   }
 
   .form-input {
-    @apply w-full bg-slate-900/50 text-white p-3 rounded-lg border border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200;
+    @apply w-full bg-base-100/50 text-base-content p-3 rounded-lg border border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all duration-200;
   }
 
   .form-select {
-    @apply w-full bg-slate-900/50 text-white p-3 rounded-lg border border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200;
+    @apply w-full bg-base-100/50 text-base-content p-3 rounded-lg border border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all duration-200;
   }
 
   .form-input-error {
-    @apply w-full even-lighter-background-color text-white p-2 rounded border border-red-500 focus:border-blue-500 focus:outline-none;
+    @apply w-full even-lighter-background-color text-base-content p-2 rounded border border-error focus:border-primary focus:outline-none;
   }
 
   .error-text {
-    @apply text-xs text-red-400 mt-1;
+    @apply text-xs text-error mt-1;
   }
 
   .help-text {
-    @apply text-xs text-neutral-400 mt-1;
+    @apply text-xs text-base-content/60 mt-1;
   }
 
   /* Button Components */
   .btn-primary {
-    @apply px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg shadow-lg shadow-blue-900/50 transition-all duration-200 font-medium;
+    @apply px-4 py-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-content rounded-lg shadow-lg shadow-primary/20 transition-all duration-200 font-medium;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg shadow-lg shadow-slate-900/50 transition-all duration-200 font-medium;
+    @apply px-4 py-2 bg-gradient-to-r from-secondary to-secondary/90 hover:from-secondary/90 hover:to-secondary/80 text-secondary-content rounded-lg shadow-lg shadow-secondary/20 transition-all duration-200 font-medium;
   }
 
   .btn-success {
-    @apply px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-lg shadow-lg shadow-emerald-900/50 transition-all duration-200 font-medium;
+    @apply px-4 py-2 bg-gradient-to-r from-success to-success/90 hover:from-success/90 hover:to-success/80 text-success-content rounded-lg shadow-lg shadow-success/20 transition-all duration-200 font-medium;
   }
 
   .btn-danger {
-    @apply px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg shadow-lg shadow-red-900/50 transition-all duration-200 font-medium;
+    @apply px-4 py-2 bg-gradient-to-r from-error to-error/90 hover:from-error/90 hover:to-error/80 text-error-content rounded-lg shadow-lg shadow-error/20 transition-all duration-200 font-medium;
   }
 
   .btn-large {
@@ -134,16 +134,16 @@
 
   /* ReactFlow Container */
   .reactflow-container {
-    @apply w-full h-[60vh] min-h-[400px] max-h-[800px] border border-slate-700/50 rounded-xl bg-slate-900/30 backdrop-blur-sm shadow-2xl;
+    @apply w-full h-[60vh] min-h-[400px] max-h-[800px] border border-base-300/50 rounded-xl bg-base-100/30 backdrop-blur-sm shadow-2xl;
   }
 
   /* Template Gallery */
   .template-card {
-    @apply p-5 border rounded-xl cursor-pointer transition-all duration-300 border-slate-700/50 hover:border-blue-400 hover:shadow-xl hover:scale-[1.02] bg-slate-800/30 backdrop-blur-sm;
+    @apply p-5 border rounded-xl cursor-pointer transition-all duration-300 border-base-300/50 hover:border-primary hover:shadow-xl hover:scale-[1.02] bg-base-200/30 backdrop-blur-sm;
   }
 
   .template-card-selected {
-    @apply p-5 border-2 rounded-xl cursor-pointer transition-all duration-300 border-blue-500 bg-blue-900/30 shadow-xl shadow-blue-900/30 scale-[1.02] backdrop-blur-sm;
+    @apply p-5 border-2 rounded-xl cursor-pointer transition-all duration-300 border-primary bg-primary/20 shadow-xl shadow-primary/30 scale-[1.02] backdrop-blur-sm;
   }
 
   .template-tag {
@@ -151,35 +151,35 @@
   }
 
   .template-tag-blue {
-    @apply px-2 py-1 bg-blue-900/50 text-blue-300 rounded-full text-xs;
+    @apply px-2 py-1 bg-primary/20 text-primary rounded-full text-xs;
   }
 
   .template-tag-purple {
-    @apply px-2 py-1 bg-purple-900/50 text-purple-300 rounded-full text-xs;
+    @apply px-2 py-1 bg-secondary/20 text-secondary rounded-full text-xs;
   }
 
   .template-tag-green {
-    @apply px-2 py-1 bg-green-900/50 text-green-300 rounded-full text-xs;
+    @apply px-2 py-1 bg-success/20 text-success rounded-full text-xs;
   }
 
   .template-tag-orange {
-    @apply px-2 py-1 bg-orange-900/50 text-orange-300 rounded-full text-xs;
+    @apply px-2 py-1 bg-warning/20 text-warning rounded-full text-xs;
   }
 
   .environment-card {
-    @apply p-2 rounded-lg border border-neutral-700 hover:lighter-background-color transition-colors;
+    @apply p-2 rounded-lg border border-base-300 hover:lighter-background-color transition-colors;
   }
 
   .environment-name {
-    @apply text-[15px] font-medium text-neutral-300 truncate;
+    @apply text-[15px] font-medium text-base-content/80 truncate;
   }
 
   .text-loading {
-    @apply text-center text-neutral-400 p-4;
+    @apply text-center text-base-content/60 p-4;
   }
 
   .card-container {
-    @apply shadow-2xl shadow-black/50 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-700/50;
+    @apply shadow-2xl shadow-black/50 bg-base-100/80 backdrop-blur-md rounded-2xl border border-base-300/50;
   }
 
   .nav-container {
@@ -187,23 +187,23 @@
   }
 
   .nav-link {
-    @apply shadow-sm shadow-black/30 px-5 py-3 hover:text-slate-50 text-center rounded-xl transition-all duration-300 hover:bg-slate-800/70 hover:scale-105 text-sm font-semibold text-slate-400 hover:shadow-lg;
+    @apply shadow-sm shadow-black/30 px-5 py-3 hover:text-base-content text-center rounded-xl transition-all duration-300 hover:bg-base-200/70 hover:scale-105 text-sm font-semibold text-base-content/60 hover:shadow-lg;
   }
 
   .heading-lg {
-    @apply text-neutral-50 text-2xl font-extrabold;
+    @apply text-base-content text-2xl font-extrabold;
   }
 
   .heading-md {
-    @apply text-neutral-50 text-xl font-extrabold;
+    @apply text-base-content text-xl font-extrabold;
   }
 
   .heading-sm {
-    @apply text-neutral-50 text-lg font-extrabold;
+    @apply text-base-content text-lg font-extrabold;
   }
 
   .base-button {
-    @apply shadow-sm shadow-black px-5 py-3 hover:text-neutral-50 text-center rounded-lg transition ease-in-out duration-500 hover:lighter-background-color text-sm font-extrabold text-neutral-400;
+    @apply shadow-sm shadow-black px-5 py-3 hover:text-base-content text-center rounded-lg transition ease-in-out duration-500 hover:lighter-background-color text-sm font-extrabold text-base-content/60;
   }
 
   .current-environment-info-container {
@@ -223,11 +223,11 @@
   }
 
   .info-and-config-attacks-title-color {
-    @apply text-neutral-50;
+    @apply text-base-content;
   }
 
   .info-and-config-attacks-info-panel {
-    @apply base-text-color pl-1 text-sm w-[95%] border-4 border-double border-black bg-slate-500/20 w-[95%] text-left;
+    @apply base-text-color pl-1 text-sm w-[95%] border-4 border-double border-base-300 bg-base-200/20 w-[95%] text-left;
   }
 
   .info-and-config-configuration-panel {
@@ -239,46 +239,46 @@
   }
 
   .deployed-environment-id {
-    @apply text-[20px] text-neutral-400 truncate mb-2;
+    @apply text-[20px] text-base-content/60 truncate mb-2;
   }
 
   .deployed-environment-status-deploying {
-    @apply text-blue-400;
+    @apply text-info;
   }
 
   .deployed-environment-status-deployed {
-    @apply text-green-400;
+    @apply text-success;
   }
 
   .deployed-environment-status-saving {
-    @apply text-yellow-400;
+    @apply text-warning;
   }
 
   .deployed-environment-status-destroying {
-    @apply text-red-400;
+    @apply text-error;
   }
 
   .deployed-environment-interact-label {
-    @apply px-3 py-1 bg-slate-900 text-neutral-200 rounded-lg text-sm;
+    @apply px-3 py-1 bg-base-100 text-base-content/80 rounded-lg text-sm;
   }
 
   .deployed-environment-selected-label {
-    @apply px-3 py-1 bg-green-800 text-neutral-200 rounded-lg text-sm cursor-default;
+    @apply px-3 py-1 bg-success/80 text-success-content rounded-lg text-sm cursor-default;
   }
 
   /* Azure Status Indicators */
   .azure-status-indicator-red {
-    @apply w-2.5 h-2.5 rounded-full bg-red-500;
-    box-shadow: 0 0 6px rgba(239, 68, 68, 0.8), 0 0 12px rgba(239, 68, 68, 0.4);
+    @apply w-2.5 h-2.5 rounded-full bg-error;
+    box-shadow: 0 0 6px hsl(var(--er) / 0.8), 0 0 12px hsl(var(--er) / 0.4);
   }
 
   .azure-status-indicator-green {
-    @apply w-2.5 h-2.5 rounded-full bg-green-500;
-    box-shadow: 0 0 6px rgba(34, 197, 94, 0.8), 0 0 12px rgba(34, 197, 94, 0.4);
+    @apply w-2.5 h-2.5 rounded-full bg-success;
+    box-shadow: 0 0 6px hsl(var(--su) / 0.8), 0 0 12px hsl(var(--su) / 0.4);
   }
 
   .azure-status-indicator-loading {
-    @apply w-2.5 h-2.5 rounded-full bg-gray-400;
+    @apply w-2.5 h-2.5 rounded-full bg-base-content/40;
   }
 
   .template-manager-title {

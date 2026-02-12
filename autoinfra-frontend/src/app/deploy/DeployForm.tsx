@@ -291,13 +291,13 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
       </h1>
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center gap-4">
-          <label className="text-slate-50 font-medium min-w-[5rem]">Scenario:</label>
+          <label className="text-base-content font-medium min-w-[5rem]">Scenario:</label>
           <Listbox value={selected} onChange={updateInfoPanel} disabled={scenarioData.length === 0}>
             <div className="relative w-56">
               <ListboxButton className={`w-full py-2 px-3 rounded-lg border focus:outline-none transition-all duration-200 ${
                 scenarioData.length === 0
-                  ? "bg-slate-800 text-slate-500 border-slate-700 cursor-not-allowed"
-                  : "bg-slate-900/50 text-white border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  ? "bg-base-200 text-base-content0 border-base-300 cursor-not-allowed"
+                  : "bg-base-100/50 text-white border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
               }`}>
                 <span className="block truncate">{selected || (scenarioData.length === 0 ? "No scenarios available" : "Select scenario")}</span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"></span>
@@ -308,13 +308,13 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <ListboxOptions className="absolute mt-1 max-h-60 w-full overflow-auto rounded-lg bg-slate-900 border border-slate-600 py-1 text-base shadow-xl z-10 focus:outline-none sm:text-sm">
+                <ListboxOptions className="absolute mt-1 max-h-60 w-full overflow-auto rounded-lg bg-base-100 border border-base-300 py-1 text-base shadow-xl z-10 focus:outline-none sm:text-sm">
                   {scenarioData.map((item) => (
                     <ListboxOption
                       key={item}
                       className={({ focus }) =>
                         `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                          focus ? "bg-blue-600 text-white" : "text-slate-50"
+                          focus ? "bg-primary text-white" : "text-base-content"
                         }`
                       }
                       value={item}
@@ -329,7 +329,7 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
                             {item}
                           </span>
                           {selected ? (
-                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-300"></span>
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary"></span>
                           ) : null}
                         </>
                       )}
@@ -345,15 +345,15 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
           <>
             {/* Toggle between unified and per-machine versions */}
             <div className="flex items-center gap-4">
-              <label className="text-slate-50 font-medium min-w-[5rem] text-sm">Version Mode:</label>
+              <label className="text-base-content font-medium min-w-[5rem] text-sm">Version Mode:</label>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setUsePerMachineVersions(false)}
                   className={`px-3 py-1 rounded-lg text-sm transition-all duration-200 ${
                     !usePerMachineVersions
-                      ? "bg-blue-600 text-white border border-blue-500"
-                      : "bg-slate-800 text-slate-400 border border-slate-600 hover:bg-slate-700"
+                      ? "bg-primary text-white border border-primary"
+                      : "bg-base-200 text-base-content/60 border border-base-300 hover:bg-base-300"
                   }`}
                 >
                   Unified
@@ -363,8 +363,8 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
                   onClick={() => setUsePerMachineVersions(true)}
                   className={`px-3 py-1 rounded-lg text-sm transition-all duration-200 ${
                     usePerMachineVersions
-                      ? "bg-blue-600 text-white border border-blue-500"
-                      : "bg-slate-800 text-slate-400 border border-slate-600 hover:bg-slate-700"
+                      ? "bg-primary text-white border border-primary"
+                      : "bg-base-200 text-base-content/60 border border-base-300 hover:bg-base-300"
                   }`}
                 >
                   Per-Machine
@@ -375,10 +375,10 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
             {/* Unified version selector */}
             {!usePerMachineVersions && (
               <div className="flex items-center gap-4">
-                <label className="text-slate-50 font-medium min-w-[5rem]">Version:</label>
+                <label className="text-base-content font-medium min-w-[5rem]">Version:</label>
                 <Listbox value={selectedVersion} onChange={setSelectedVersion}>
                   <div className="relative w-56">
-                    <ListboxButton className="w-full bg-slate-900/50 text-white py-2 px-3 rounded-lg border border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200">
+                    <ListboxButton className="w-full bg-base-100/50 text-white py-2 px-3 rounded-lg border border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all duration-200">
                       <span className="block truncate">
                         {isLoadingVersions ? "Loading..." : selectedVersion || "Select version"}
                       </span>
@@ -390,13 +390,13 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
                       leaveFrom="opacity-100"
                       leaveTo="opacity-0"
                     >
-                      <ListboxOptions className="absolute mt-1 max-h-60 w-full overflow-auto rounded-lg bg-slate-900 border border-slate-600 py-1 text-base shadow-xl z-10 focus:outline-none sm:text-sm">
+                      <ListboxOptions className="absolute mt-1 max-h-60 w-full overflow-auto rounded-lg bg-base-100 border border-base-300 py-1 text-base shadow-xl z-10 focus:outline-none sm:text-sm">
                         {availableVersions.map((version) => (
                           <ListboxOption
                             key={version}
                             className={({ focus }) =>
                               `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                focus ? "bg-blue-600 text-white" : "text-slate-50"
+                                focus ? "bg-primary text-white" : "text-base-content"
                               }`
                             }
                             value={version}
@@ -411,7 +411,7 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
                                   {version}
                                 </span>
                                 {selected ? (
-                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-300"></span>
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary"></span>
                                 ) : null}
                               </>
                             )}
@@ -427,16 +427,16 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
             {/* Per-machine version selectors */}
             {usePerMachineVersions && Object.keys(machineVersions).length > 0 && (
               <div className="w-full max-w-md">
-                <label className="text-slate-50 font-medium block mb-3">Machine Versions:</label>
+                <label className="text-base-content font-medium block mb-3">Machine Versions:</label>
                 <div className="space-y-3">
                   {/* Unified Domain Controller Version Selector */}
                   {dcVersions.length > 0 && (
-                    <div className="bg-slate-800/70 rounded-lg p-3 border border-blue-600/50">
-                      <div className="text-slate-300 text-xs mb-2 italic">
+                    <div className="bg-base-200/70 rounded-lg p-3 border border-primary/50">
+                      <div className="text-base-content/80 text-xs mb-2 italic">
                         All Domain Controllers will use the same version to maintain consistent user/attack configuration.
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-blue-400 font-semibold text-sm w-32">
+                        <span className="text-primary font-semibold text-sm w-32">
                           Domain Controllers:
                         </span>
                         <Listbox
@@ -444,7 +444,7 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
                           onChange={(v) => setUnifiedDCVersion(v)}
                         >
                           <div className="relative flex-1">
-                            <ListboxButton className="w-full bg-slate-900/50 text-white py-1.5 px-3 rounded-lg border border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 text-sm font-medium">
+                            <ListboxButton className="w-full bg-base-100/50 text-white py-1.5 px-3 rounded-lg border border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all duration-200 text-sm font-medium">
                               <span className="block truncate">
                                 {unifiedDCVersion || "Select"}
                               </span>
@@ -455,13 +455,13 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
                               leaveFrom="opacity-100"
                               leaveTo="opacity-0"
                             >
-                              <ListboxOptions className="absolute mt-1 max-h-40 w-full overflow-auto rounded-lg bg-slate-900 border border-slate-600 py-1 text-sm shadow-xl z-20 focus:outline-none">
+                              <ListboxOptions className="absolute mt-1 max-h-40 w-full overflow-auto rounded-lg bg-base-100 border border-base-300 py-1 text-sm shadow-xl z-20 focus:outline-none">
                                 {dcVersions.map((version) => (
                                   <ListboxOption
                                     key={version}
                                     className={({ focus }) =>
                                       `relative cursor-default select-none py-1.5 px-3 ${
-                                        focus ? "bg-blue-600 text-white" : "text-slate-50"
+                                        focus ? "bg-primary text-white" : "text-base-content"
                                       }`
                                     }
                                     value={version}
@@ -482,12 +482,12 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
                   )}
 
                   {/* Other Machines */}
-                  <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-600 max-h-60 overflow-y-auto space-y-2">
+                  <div className="bg-base-200/50 rounded-lg p-4 border border-base-300 max-h-60 overflow-y-auto space-y-2">
                     {Object.entries(machineVersions)
                       .filter(([machineName]) => !isDomainController(machineName))
                       .map(([machineName, versions]) => (
                     <div key={machineName} className="flex items-center gap-3">
-                      <span className="text-slate-300 font-mono text-sm w-32 truncate" title={machineName}>
+                      <span className="text-base-content/80 font-mono text-sm w-32 truncate" title={machineName}>
                         {machineName}:
                       </span>
                       <Listbox
@@ -495,7 +495,7 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
                         onChange={(v) => updateMachineVersion(machineName, v)}
                       >
                         <div className="relative flex-1">
-                          <ListboxButton className="w-full bg-slate-900/50 text-white py-1 px-2 rounded-lg border border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 text-sm">
+                          <ListboxButton className="w-full bg-base-100/50 text-white py-1 px-2 rounded-lg border border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all duration-200 text-sm">
                             <span className="block truncate">
                               {selectedMachineVersions[machineName] || "Select"}
                             </span>
@@ -506,13 +506,13 @@ export default function DeployForm({ setValue, onDeploymentStarted }: DeployForm
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                           >
-                            <ListboxOptions className="absolute mt-1 max-h-40 w-full overflow-auto rounded-lg bg-slate-900 border border-slate-600 py-1 text-sm shadow-xl z-20 focus:outline-none">
+                            <ListboxOptions className="absolute mt-1 max-h-40 w-full overflow-auto rounded-lg bg-base-100 border border-base-300 py-1 text-sm shadow-xl z-20 focus:outline-none">
                               {versions.map((version) => (
                                 <ListboxOption
                                   key={version}
                                   className={({ focus }) =>
                                     `relative cursor-default select-none py-1 px-2 ${
-                                      focus ? "bg-blue-600 text-white" : "text-slate-50"
+                                      focus ? "bg-primary text-white" : "text-base-content"
                                     }`
                                   }
                                   value={version}

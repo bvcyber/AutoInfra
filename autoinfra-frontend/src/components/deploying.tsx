@@ -228,13 +228,13 @@ export default function Deploying({ customMessage }: { customMessage?: string })
   const getStatusColor = (status: DeploymentItem["status"]) => {
     switch (status) {
       case "succeeded":
-        return "text-green-400";
+        return "text-success";
       case "running":
-        return "text-yellow-400";
+        return "text-warning";
       case "failed":
-        return "text-red-400";
+        return "text-error";
       default:
-        return "text-neutral-400";
+        return "text-base-content/60";
     }
   };
 
@@ -242,25 +242,25 @@ export default function Deploying({ customMessage }: { customMessage?: string })
   if (failureError) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-start pt-24 p-8">
-        <h1 className="text-red-400 text-3xl font-extrabold text-center mb-2">
+        <h1 className="text-error text-3xl font-extrabold text-center mb-2">
           Build Failed
         </h1>
 
-        <div className="text-neutral-400 text-center mb-6">
+        <div className="text-base-content/60 text-center mb-6">
           The deployment encountered an error and has been deleted.
         </div>
 
-        <div className="w-full max-w-2xl bg-red-900/20 border border-red-700/50 rounded-lg p-6 mb-6">
-          <h3 className="text-red-300 font-semibold mb-3">Error Details:</h3>
-          <div className="text-neutral-300 text-sm font-mono whitespace-pre-wrap break-words">
+        <div className="w-full max-w-2xl bg-error/20 border border-error/50 rounded-lg p-6 mb-6">
+          <h3 className="text-error font-semibold mb-3">Error Details:</h3>
+          <div className="text-base-content/80 text-sm font-mono whitespace-pre-wrap break-words">
             {failureError}
           </div>
         </div>
 
         {/* Failed Deployment List */}
         {deploymentItems.length > 0 && (
-          <div className="w-full max-w-md bg-neutral-800/50 rounded-lg border border-neutral-700 p-4 mb-6">
-            <h3 className="text-neutral-200 font-semibold mb-3 text-center">
+          <div className="w-full max-w-md bg-base-200/50 rounded-lg border border-base-300 p-4 mb-6">
+            <h3 className="text-base-content/70 font-semibold mb-3 text-center">
               Deployment Status
             </h3>
             <div className="space-y-2 max-h-80 overflow-y-auto">
@@ -269,7 +269,7 @@ export default function Deploying({ customMessage }: { customMessage?: string })
                   key={index}
                   className="flex items-center justify-between p-2 rounded"
                 >
-                  <span className="text-sm font-mono truncate text-neutral-300">
+                  <span className="text-sm font-mono truncate text-base-content/80">
                     {item.name}
                   </span>
                   <span className={`text-xs ml-3 whitespace-nowrap ${getStatusColor(item.status)}`}>
@@ -283,7 +283,7 @@ export default function Deploying({ customMessage }: { customMessage?: string })
 
         <button
           onClick={() => router.push("/")}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+          className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-colors"
         >
           Return to Home
         </button>
@@ -293,29 +293,29 @@ export default function Deploying({ customMessage }: { customMessage?: string })
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start pt-24 p-8">
-      <h1 className="text-neutral-50 text-3xl font-extrabold text-center mb-2">
+      <h1 className="text-base-content text-3xl font-extrabold text-center mb-2">
         Deploying
       </h1>
 
-      <div className="text-neutral-400 text-center mb-6">
+      <div className="text-base-content/60 text-center mb-6">
         {customMessage || "Please wait while your environment is being deployed"}
       </div>
       
-      <div className="text-neutral-50 text-center mb-8">
+      <div className="text-base-content text-center mb-8">
         <div className="text-lg font-semibold">
           {deploymentType === "scenario" 
             ? `Scenario: ${scenario}` 
             : `Custom Topology`}
         </div>
-        <div className="text-neutral-400 text-sm">
+        <div className="text-base-content/60 text-sm">
           Resource Group: {deploymentID}
         </div>
       </div>
 
       {/* Deployment Progress List */}
       {deploymentItems.length > 0 && (
-        <div className="w-full max-w-md bg-neutral-800/50 rounded-lg border border-neutral-700 p-4">
-          <h3 className="text-neutral-200 font-semibold mb-3 text-center">
+        <div className="w-full max-w-md bg-base-200/50 rounded-lg border border-base-300 p-4">
+          <h3 className="text-base-content/70 font-semibold mb-3 text-center">
             Deployment Progress ({deploymentItems.filter(d => d.status === "succeeded").length}/{deploymentItems.length})
           </h3>
           <div className="space-y-2 max-h-80 overflow-y-auto">
@@ -323,12 +323,12 @@ export default function Deploying({ customMessage }: { customMessage?: string })
               <div 
                 key={index}
                 className={`flex items-center justify-between p-2 rounded ${
-                  item.status === "running" ? "bg-yellow-900/20 border border-yellow-700/30" : ""
+                  item.status === "running" ? "bg-warning/20 border border-warning/30" : ""
                 }`}
               >
                 <span className={`text-sm font-mono truncate ${
-                  item.status === "succeeded" ? "text-neutral-300" : 
-                  item.status === "running" ? "text-yellow-300" : "text-neutral-400"
+                  item.status === "succeeded" ? "text-base-content/80" : 
+                  item.status === "running" ? "text-warning" : "text-base-content/60"
                 }`}>
                   {item.name}
                 </span>
@@ -346,13 +346,13 @@ export default function Deploying({ customMessage }: { customMessage?: string })
       {/* Loading spinner when no items yet */}
       {deploymentItems.length === 0 && (
         <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <span className="text-neutral-400">Initializing deployment...</span>
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <span className="text-base-content/60">Initializing deployment...</span>
         </div>
       )}
 
       {isBuildDeployment && (
-        <div className="text-neutral-400 text-center mt-8 text-sm">
+        <div className="text-base-content/60 text-center mt-8 text-sm">
           <p>Building a custom topology may take 10-30 minutes.</p>
           <p>You will be automatically redirected when complete.</p>
         </div>

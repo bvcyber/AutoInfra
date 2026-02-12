@@ -85,7 +85,7 @@ export default function AuthPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="pinging-red-loader"></div>
+        <div className="pinging-loader"></div>
       </div>
     )
   }
@@ -98,13 +98,13 @@ export default function AuthPage() {
 
       {/* Status Badge */}
       <div className="flex items-center justify-center gap-2 mb-8">
-        <span className="text-slate-400 text-sm">Status:</span>
+        <span className="text-base-content/60 text-sm">Status:</span>
         {isAuthorized ? (
-          <span className="px-3 py-1 bg-green-900/30 border border-green-500 text-green-400 rounded-full text-sm font-semibold">
+          <span className="px-3 py-1 bg-success/20 border border-success text-success rounded-full text-sm font-semibold">
             Connected
           </span>
         ) : (
-          <span className="px-3 py-1 bg-red-900/30 border border-red-500 text-red-400 rounded-full text-sm font-semibold">
+          <span className="px-3 py-1 bg-error/20 border border-error text-error rounded-full text-sm font-semibold">
             Not Connected
           </span>
         )}
@@ -115,38 +115,38 @@ export default function AuthPage() {
         <div className="form-section">
           <h2 className="form-section-title">Quick Setup</h2>
 
-          <div className="space-y-4 text-slate-300">
-            <div className="bg-slate-900/50 border border-slate-700 rounded-lg p-4">
-              <p className="font-semibold text-slate-50 mb-2">Step 1: Install Azure CLI</p>
+          <div className="space-y-4 text-base-content/80">
+            <div className="bg-base-200/50 border border-base-300 rounded-lg p-4">
+              <p className="font-semibold text-base-content mb-2">Step 1: Install Azure CLI</p>
               <a
                 href="https://learn.microsoft.com/en-us/cli/azure/install-azure-cli"
                 target="_blank"
-                className="text-blue-400 hover:text-blue-300 underline text-sm"
+                className="text-primary hover:text-primary/80 underline text-sm"
               >
                 Download Azure CLI →
               </a>
             </div>
 
-            <div className="bg-slate-900/50 border border-slate-700 rounded-lg p-4">
-              <p className="font-semibold text-slate-50 mb-2">Step 2: Get Subscription ID</p>
+            <div className="bg-base-200/50 border border-base-300 rounded-lg p-4">
+              <p className="font-semibold text-base-content mb-2">Step 2: Get Subscription ID</p>
               <p className="text-sm mb-2">Visit the{" "}
                 <a
                   href="https://portal.azure.com/#view/Microsoft_Azure_Billing/SubscriptionsBladeV2"
                   target="_blank"
-                  className="text-blue-400 hover:text-blue-300 underline"
+                  className="text-primary hover:text-primary/80 underline"
                 >
                   Azure Portal
                 </a>{" "}
                 and copy your Subscription ID
               </p>
-              <img src="/por1.png" className="rounded-lg border border-slate-700 mt-2" alt="Azure Portal"/>
+              <img src="/por1.png" className="rounded-lg border border-base-300 mt-2" alt="Azure Portal"/>
             </div>
 
-            <div className="bg-slate-900/50 border border-slate-700 rounded-lg p-4">
-              <p className="font-semibold text-slate-50 mb-2">Step 3: Create Service Principal</p>
+            <div className="bg-base-200/50 border border-base-300 rounded-lg p-4">
+              <p className="font-semibold text-base-content mb-2">Step 3: Create Service Principal</p>
               <p className="text-sm mb-3">Run this command (paste your Subscription ID in the form first):</p>
               <div className="relative">
-                <pre className="bg-black text-green-400 p-3 rounded-lg text-xs overflow-x-auto border border-slate-600">
+                <pre className="bg-black text-success p-3 rounded-lg text-xs overflow-x-auto border border-base-300">
                   {`az ad sp create-for-rbac --name "AutoInfra" \\
   --scopes /subscriptions/${formData.azSubscriptionID || "YOUR-SUBSCRIPTION-ID"} \\
   --sdk-auth --role Contributor`}
@@ -154,15 +154,15 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={copyCommand}
-                  className="absolute top-2 right-2 px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-100 text-xs rounded-lg border border-slate-600 transition-colors duration-200"
+                  className="absolute top-2 right-2 px-3 py-1 bg-base-200 hover:bg-base-300 text-base-content text-xs rounded-lg border border-base-300 transition-colors duration-200"
                 >
                   {copied ? "✓ Copied!" : "Copy"}
                 </button>
               </div>
             </div>
 
-            <div className="bg-slate-900/50 border border-slate-700 rounded-lg p-4">
-              <p className="font-semibold text-slate-50 mb-2">Step 4: Fill the Form</p>
+            <div className="bg-base-200/50 border border-base-300 rounded-lg p-4">
+              <p className="font-semibold text-base-content mb-2">Step 4: Fill the Form</p>
               <p className="text-sm">
                 Copy the output values (clientId, clientSecret, tenantId) into the form →
               </p>
@@ -262,13 +262,13 @@ export default function AuthPage() {
             )}
 
             {responseMessage && (
-              <div className="p-3 bg-red-900/30 border border-red-500 rounded-lg text-red-300 text-sm">
+              <div className="p-3 bg-error/20 border border-error rounded-lg text-error text-sm">
                 {responseMessage}
               </div>
             )}
 
             {isAuthorized && (
-              <div className="p-3 bg-green-900/30 border border-green-500 rounded-lg text-green-300 text-sm text-center">
+              <div className="p-3 bg-success/20 border border-success rounded-lg text-success text-sm text-center">
                 Successfully connected to Azure
               </div>
             )}
@@ -277,7 +277,7 @@ export default function AuthPage() {
       </div>
 
       {/* Footer Note */}
-      <div className="text-center text-slate-500 text-sm mt-6">
+      <div className="text-center text-base-content0 text-sm mt-6">
         <p>Your credentials are stored in memory for the current session and used only to manage Azure resources for this lab.</p>
       </div>
     </div>

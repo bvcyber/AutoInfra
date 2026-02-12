@@ -1,5 +1,4 @@
 import { useState } from "react";
-import styles from "@/components/passwordDisplay.module.css";
 
 const PasswordDisplay = ({ password }) => {
   const [isBlurred, setIsBlurred] = useState(true);
@@ -10,7 +9,7 @@ const PasswordDisplay = ({ password }) => {
 
   return (
     <span
-      className={isBlurred ? styles.blurred : ""}
+      className={isBlurred ? "blur-sm transition-all duration-200" : "transition-all duration-200"}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}

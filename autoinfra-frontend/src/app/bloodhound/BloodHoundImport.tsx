@@ -96,7 +96,7 @@ const nodeTypes = {
       data.isSub
         ? "bg-gradient-to-br from-purple-600 to-violet-700 shadow-purple-900/50 border-purple-500/30"
         : "bg-gradient-to-br from-pink-600 to-rose-700 shadow-pink-900/50 border-pink-500/30"
-    } ${data.hasPublicIP ? "ring-2 ring-cyan-400 ring-offset-2 ring-offset-neutral-900" : ""} text-white`}>
+    } ${data.hasPublicIP ? "ring-2 ring-cyan-400 ring-offset-2 ring-offset-base-100" : ""} text-white`}>
       {data.locked && (
         <div className="absolute -top-2 -right-2 bg-yellow-500 text-black rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
           L
@@ -120,7 +120,7 @@ const nodeTypes = {
   workstation: ({ data }: { data: any }) => (
     <div className={`bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 rounded-xl shadow-2xl shadow-emerald-900/50 relative border border-emerald-500/30 backdrop-blur-sm ${
       data.locked ? "opacity-75 ring-2 ring-yellow-500" : ""
-    } ${data.hasPublicIP ? "ring-2 ring-cyan-400 ring-offset-2 ring-offset-neutral-900" : ""}`}>
+    } ${data.hasPublicIP ? "ring-2 ring-cyan-400 ring-offset-2 ring-offset-base-100" : ""}`}>
       {data.locked && (
         <div className="absolute -top-2 -right-2 bg-yellow-500 text-black rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
           L
@@ -157,7 +157,7 @@ const nodeTypes = {
   certificateAuthority: ({ data }: { data: any }) => (
     <div className={`bg-gradient-to-br from-yellow-500 to-amber-600 text-white p-4 rounded-xl shadow-2xl shadow-yellow-900/50 relative border border-yellow-400/30 backdrop-blur-sm ${
       data.locked ? "opacity-75 ring-2 ring-yellow-500" : ""
-    } ${data.hasPublicIP ? "ring-2 ring-cyan-400 ring-offset-2 ring-offset-neutral-900" : ""}`}>
+    } ${data.hasPublicIP ? "ring-2 ring-cyan-400 ring-offset-2 ring-offset-base-100" : ""}`}>
       {data.locked && (
         <div className="absolute -top-2 -right-2 bg-yellow-500 text-black rounded-full w-6 h-6 flex items-center justify-center text-xs">
           🔒
@@ -1198,7 +1198,7 @@ export default function BloodHoundImport() {
           BloodHound Import
         </h1>
         <div className="flex items-center justify-center py-12">
-          <div className="text-neutral-400">Checking for active session...</div>
+          <div className="text-base-content/60">Checking for active session...</div>
         </div>
       </div>
     )
@@ -1209,14 +1209,14 @@ export default function BloodHoundImport() {
       <h1 className="base-title-centered base-text-color mb-4">
         BloodHound Import
       </h1>
-      <p className="text-center text-neutral-400 mb-6">
+      <p className="text-center text-base-content/60 mb-6">
         Upload BloodHound collection data to automatically generate a replica Active Directory environment
       </p>
 
         {/* Session Info Banner - show when resuming an existing session */}
         {uploadResult && step !== "upload" && step !== "complete" && (
-          <div className="mb-6 p-4 bg-blue-900/30 border border-blue-500/50 rounded-xl flex items-center justify-between">
-            <div className="flex items-center gap-3 text-blue-300">
+          <div className="mb-6 p-4 bg-primary/30 border border-primary/50 rounded-xl flex items-center justify-between">
+            <div className="flex items-center gap-3 text-primary">
               <span className="text-xl">🔄</span>
               <span>
                 Continuing import session: <span className="font-mono font-bold">{uploadResult.upload_id}</span>
@@ -1225,7 +1225,7 @@ export default function BloodHoundImport() {
             </div>
             <button
               onClick={handleClearSession}
-              className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-neutral-300 rounded-lg text-sm transition-colors"
+              className="px-4 py-2 bg-base-300 hover:bg-base-300 text-base-content/80 rounded-lg text-sm transition-colors"
             >
               Start New Import
             </button>
@@ -1240,18 +1240,18 @@ export default function BloodHoundImport() {
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
                     isStepComplete(s)
-                      ? "bg-blue-600 text-white"
+                      ? "bg-primary text-white"
                       : isStepActive(s)
-                      ? "bg-blue-500 text-white"
-                      : "bg-neutral-700 text-neutral-400"
+                      ? "bg-primary text-white"
+                      : "bg-base-300 text-base-content/60"
                   }`}
                 >
                   {isStepComplete(s) ? "✓" : idx + 1}
                 </div>
-                <span className="text-xs text-neutral-400 mt-2 capitalize">{s === "configuring" ? "config" : s}</span>
+                <span className="text-xs text-base-content/60 mt-2 capitalize">{s === "configuring" ? "config" : s}</span>
               </div>
               {idx < 5 && (
-                <div className={`flex-1 h-1 mx-2 ${isStepComplete(s) ? "bg-blue-600" : "bg-neutral-700"}`} />
+                <div className={`flex-1 h-1 mx-2 ${isStepComplete(s) ? "bg-primary" : "bg-base-300"}`} />
               )}
             </React.Fragment>
           ))}
@@ -1259,9 +1259,9 @@ export default function BloodHoundImport() {
 
         {/* Error Display */}
         {error && (
-          <div className="p-4 bg-red-900/30 border border-red-500/50 rounded-xl text-red-300 flex items-center gap-3">
+          <div className="p-4 bg-error/30 border border-error/50 rounded-xl text-error flex items-center gap-3">
             <span>⚠️ {error}</span>
-            <button onClick={() => setError(null)} className="ml-auto text-red-400 hover:text-red-300">✕</button>
+            <button onClick={() => setError(null)} className="ml-auto text-error hover:text-error">✕</button>
           </div>
         )}
 
@@ -1274,20 +1274,20 @@ export default function BloodHoundImport() {
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               className={`relative border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer ${
-                isDragging ? "border-blue-500 bg-blue-500/10" : file ? "border-emerald-500 bg-emerald-500/10" : "border-neutral-600 hover:border-neutral-500 bg-neutral-800/30"
+                isDragging ? "border-primary bg-primary/10" : file ? "border-emerald-500 bg-emerald-500/10" : "border-base-300 hover:border-base-300 bg-base-200/30"
               }`}
             >
               {file ? (
                 <div className="space-y-3">
                   <div className="w-16 h-16 mx-auto bg-emerald-500/20 rounded-full flex items-center justify-center">✓</div>
-                  <p className="text-neutral-200 font-medium">{file.name}</p>
-                  <p className="text-neutral-400 text-sm">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                  <p className="text-base-content/70 font-medium">{file.name}</p>
+                  <p className="text-base-content/60 text-sm">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="w-16 h-16 mx-auto bg-neutral-700/50 rounded-full flex items-center justify-center">📁</div>
-                  <p className="text-neutral-300">Drag and drop your BloodHound ZIP file here</p>
-                  <p className="text-neutral-500 text-sm">or click to browse</p>
+                  <div className="w-16 h-16 mx-auto bg-base-300/50 rounded-full flex items-center justify-center">📁</div>
+                  <p className="text-base-content/80">Drag and drop your BloodHound ZIP file here</p>
+                  <p className="text-base-content0 text-sm">or click to browse</p>
                 </div>
               )}
               <input type="file" accept=".zip" onChange={handleFileSelect} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
@@ -1311,25 +1311,25 @@ export default function BloodHoundImport() {
             <div className="form-section">
               <h2 className="form-section-title">Domain Information</h2>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700/50">
-                  <div className="text-neutral-400 text-xs uppercase mb-1">Domain</div>
-                  <div className="text-neutral-200 font-semibold">{uploadResult.domain?.name || "Unknown"}</div>
+                <div className="bg-base-200/50 rounded-lg p-4 border border-base-300/50">
+                  <div className="text-base-content/60 text-xs uppercase mb-1">Domain</div>
+                  <div className="text-base-content/70 font-semibold">{uploadResult.domain?.name || "Unknown"}</div>
                 </div>
-                <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700/50">
-                  <div className="text-neutral-400 text-xs uppercase mb-1">Functional Level</div>
-                  <div className="text-neutral-200 font-semibold">{uploadResult.domain?.functional_level || "Unknown"}</div>
+                <div className="bg-base-200/50 rounded-lg p-4 border border-base-300/50">
+                  <div className="text-base-content/60 text-xs uppercase mb-1">Functional Level</div>
+                  <div className="text-base-content/70 font-semibold">{uploadResult.domain?.functional_level || "Unknown"}</div>
                 </div>
-                <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700/50">
-                  <div className="text-neutral-400 text-xs uppercase mb-1">Domain Controllers</div>
-                  <div className="text-neutral-200 font-semibold">{uploadResult.summary.domain_controllers}</div>
+                <div className="bg-base-200/50 rounded-lg p-4 border border-base-300/50">
+                  <div className="text-base-content/60 text-xs uppercase mb-1">Domain Controllers</div>
+                  <div className="text-base-content/70 font-semibold">{uploadResult.summary.domain_controllers}</div>
                 </div>
-                <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700/50">
-                  <div className="text-neutral-400 text-xs uppercase mb-1">Workstations</div>
-                  <div className="text-neutral-200 font-semibold">{uploadResult.summary.workstations}</div>
+                <div className="bg-base-200/50 rounded-lg p-4 border border-base-300/50">
+                  <div className="text-base-content/60 text-xs uppercase mb-1">Workstations</div>
+                  <div className="text-base-content/70 font-semibold">{uploadResult.summary.workstations}</div>
                 </div>
-                <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700/50">
-                  <div className="text-neutral-400 text-xs uppercase mb-1">Total Users</div>
-                  <div className="text-neutral-200 font-semibold">{uploadResult.summary.total_users}</div>
+                <div className="bg-base-200/50 rounded-lg p-4 border border-base-300/50">
+                  <div className="text-base-content/60 text-xs uppercase mb-1">Total Users</div>
+                  <div className="text-base-content/70 font-semibold">{uploadResult.summary.total_users}</div>
                 </div>
               </div>
             </div>
@@ -1339,11 +1339,11 @@ export default function BloodHoundImport() {
               <h2 className="form-section-title">Detected Attack Paths</h2>
               <div className="space-y-3">
                 {uploadResult.attack_paths.asrep_roastable.length > 0 && (
-                  <div className="bg-red-900/20 border border-red-700/50 rounded-lg p-4">
-                    <div className="text-red-400 font-semibold mb-2">AS-REP Roastable ({uploadResult.attack_paths.asrep_roastable.length})</div>
+                  <div className="bg-error/20 border border-error/50 rounded-lg p-4">
+                    <div className="text-error font-semibold mb-2">AS-REP Roastable ({uploadResult.attack_paths.asrep_roastable.length})</div>
                     <div className="flex flex-wrap gap-2">
                       {uploadResult.attack_paths.asrep_roastable.map((u) => (
-                        <span key={u} className="bg-red-800/50 text-red-200 px-2 py-1 rounded text-sm">{u}</span>
+                        <span key={u} className="bg-error/50 text-error-content px-2 py-1 rounded text-sm">{u}</span>
                       ))}
                     </div>
                   </div>
@@ -1369,8 +1369,8 @@ export default function BloodHoundImport() {
                   </div>
                 )}
                 {uploadResult.attack_paths.acl_attack_paths_count > 0 && (
-                  <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-4">
-                    <div className="text-blue-400 font-semibold">ACL Attack Paths: {uploadResult.attack_paths.acl_attack_paths_count}</div>
+                  <div className="bg-primary/20 border border-primary/50 rounded-lg p-4">
+                    <div className="text-primary font-semibold">ACL Attack Paths: {uploadResult.attack_paths.acl_attack_paths_count}</div>
                   </div>
                 )}
               </div>
@@ -1405,11 +1405,11 @@ export default function BloodHoundImport() {
                     type="checkbox"
                     checked={includeAllMachines}
                     onChange={(e) => setIncludeAllMachines(e.target.checked)}
-                    className="w-5 h-5 rounded border-neutral-600 bg-neutral-800 text-blue-500"
+                    className="w-5 h-5 rounded border-base-300 bg-base-200 text-primary"
                   />
-                  <span className="text-neutral-300">Include All Machines</span>
+                  <span className="text-base-content/80">Include All Machines</span>
                 </label>
-                <p className="text-neutral-500 text-sm mt-1 ml-8">
+                <p className="text-base-content0 text-sm mt-1 ml-8">
                   {includeAllMachines
                     ? "All machines from BloodHound will be included"
                     : "Only machines needed for detected attack paths will be included"}
@@ -1441,7 +1441,7 @@ export default function BloodHoundImport() {
               <h4 className="form-section-title text-base mb-3">
                 Add Infrastructure Components
               </h4>
-              <p className="text-neutral-400 text-sm mb-4">
+              <p className="text-base-content/60 text-sm mb-4">
                 🔒 Locked nodes are from BloodHound and cannot be deleted. Add more nodes below if needed.
               </p>
 
@@ -1547,8 +1547,8 @@ export default function BloodHoundImport() {
                         onChange={(e) => setFormData({ ...formData, hasPublicIP: e.target.checked })}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                      <span className="ml-2 text-sm text-gray-300">{formData.hasPublicIP ? "Yes" : "No"}</span>
+                      <div className="w-11 h-6 bg-base-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-base-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      <span className="ml-2 text-sm text-base-content/80">{formData.hasPublicIP ? "Yes" : "No"}</span>
                     </label>
                   </div>
                 )}
@@ -1584,20 +1584,20 @@ export default function BloodHoundImport() {
               
               {/* Node Edit Panel - appears when a locked node is clicked */}
               {selectedNode && (
-                <div className="absolute top-4 right-4 bg-neutral-800 border border-neutral-700 rounded-lg p-4 shadow-xl z-50 min-w-[250px]">
+                <div className="absolute top-4 right-4 bg-base-200 border border-base-300 rounded-lg p-4 shadow-xl z-50 min-w-[250px]">
                   <div className="flex justify-between items-center mb-3">
                     <h4 className="text-white font-semibold">
                       {selectedNode.data.domainControllerName || selectedNode.data.workstationName || selectedNode.data.jumpboxName || "Node"}
                     </h4>
                     <button 
                       onClick={() => setSelectedNode(null)}
-                      className="text-gray-400 hover:text-white"
+                      className="text-base-content/60 hover:text-white"
                     >
                       ✕
                     </button>
                   </div>
                   
-                  <div className="text-sm text-gray-300 mb-3">
+                  <div className="text-sm text-base-content/80 mb-3">
                     <div>Type: <span className="text-white">{selectedNode.type}</span></div>
                     {selectedNode.data.domainName && (
                       <div>Domain: <span className="text-white">{selectedNode.data.domainName}</span></div>
@@ -1605,7 +1605,7 @@ export default function BloodHoundImport() {
                     <div>IP: <span className="text-white">{selectedNode.data.privateIPAddress}</span></div>
                   </div>
                   
-                  <div className="border-t border-neutral-700 pt-3">
+                  <div className="border-t border-base-300 pt-3">
                     <label className="flex items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -1613,7 +1613,7 @@ export default function BloodHoundImport() {
                         onChange={togglePublicIP}
                         className="form-checkbox h-4 w-4 text-cyan-500 rounded"
                       />
-                      <span className="ml-2 text-sm text-gray-300">
+                      <span className="ml-2 text-sm text-base-content/80">
                         Public IP {selectedNode.data.hasPublicIP ? "(Enabled)" : "(Disabled)"}
                       </span>
                     </label>
@@ -1673,10 +1673,10 @@ export default function BloodHoundImport() {
         {step === "deploying" && (
           <div className="form-section">
             <h2 className="form-section-title flex items-center gap-3">
-              <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               Deploying Infrastructure...
             </h2>
-            <p className="text-neutral-400 mb-6">Please wait while your environment is being deployed.</p>
+            <p className="text-base-content/60 mb-6">Please wait while your environment is being deployed.</p>
 
             {deploymentItems.length > 0 ? (
               <div className="space-y-2 max-h-80 overflow-y-auto">
@@ -1684,18 +1684,18 @@ export default function BloodHoundImport() {
                   <div
                     key={item.name}
                     className={`flex items-center justify-between p-3 rounded-lg ${
-                      item.status === "succeeded" ? "bg-green-900/30 border border-green-700/50" :
-                      item.status === "running" ? "bg-blue-900/30 border border-blue-700/50" :
-                      item.status === "failed" ? "bg-red-900/30 border border-red-700/50" :
-                      "bg-neutral-700/30 border border-neutral-600/50"
+                      item.status === "succeeded" ? "bg-success/30 border border-success/50" :
+                      item.status === "running" ? "bg-primary/30 border border-primary/50" :
+                      item.status === "failed" ? "bg-error/30 border border-error/50" :
+                      "bg-base-300/30 border border-base-300/50"
                     }`}
                   >
-                    <span className="font-mono text-sm text-neutral-200">{item.name}</span>
+                    <span className="font-mono text-sm text-base-content/70">{item.name}</span>
                     <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                      item.status === "succeeded" ? "bg-green-700 text-green-100" :
-                      item.status === "running" ? "bg-blue-700 text-blue-100" :
-                      item.status === "failed" ? "bg-red-700 text-red-100" :
-                      "bg-neutral-600 text-neutral-300"
+                      item.status === "succeeded" ? "bg-success text-success-content" :
+                      item.status === "running" ? "bg-primary text-primary-content" :
+                      item.status === "failed" ? "bg-error text-error-content" :
+                      "bg-base-300 text-base-content/80"
                     }`}>
                       {item.status === "succeeded" ? "Completed" :
                        item.status === "running" ? "In Progress" :
@@ -1705,7 +1705,7 @@ export default function BloodHoundImport() {
                 ))}
               </div>
             ) : (
-              <div className="text-neutral-500 italic">Initializing deployment...</div>
+              <div className="text-base-content0 italic">Initializing deployment...</div>
             )}
           </div>
         )}
@@ -1717,28 +1717,28 @@ export default function BloodHoundImport() {
               <div className="w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
               Post-Deployment Configuration
             </h2>
-            <p className="text-neutral-400 mb-6">Creating users and enabling attack configurations...</p>
+            <p className="text-base-content/60 mb-6">Creating users and enabling attack configurations...</p>
 
             <div className="space-y-3">
               {configSteps.map((s, idx) => (
                 <div
                   key={idx}
                   className={`flex items-center justify-between p-4 rounded-lg ${
-                    s.status === "succeeded" ? "bg-green-900/30 border border-green-700/50" :
+                    s.status === "succeeded" ? "bg-success/30 border border-success/50" :
                     s.status === "running" ? "bg-purple-900/30 border border-purple-700/50" :
-                    s.status === "failed" ? "bg-red-900/30 border border-red-700/50" :
-                    "bg-neutral-700/30 border border-neutral-600/50"
+                    s.status === "failed" ? "bg-error/30 border border-error/50" :
+                    "bg-base-300/30 border border-base-300/50"
                   }`}
                 >
                   <div>
-                    <span className="text-neutral-200 font-medium">{s.name}</span>
-                    {s.message && <p className="text-sm text-neutral-400 mt-1">{s.message}</p>}
+                    <span className="text-base-content/70 font-medium">{s.name}</span>
+                    {s.message && <p className="text-sm text-base-content/60 mt-1">{s.message}</p>}
                   </div>
                   <span className={`text-xs font-semibold px-3 py-1 rounded ${
-                    s.status === "succeeded" ? "bg-green-700 text-green-100" :
+                    s.status === "succeeded" ? "bg-success text-success-content" :
                     s.status === "running" ? "bg-purple-700 text-purple-100" :
-                    s.status === "failed" ? "bg-red-700 text-red-100" :
-                    "bg-neutral-600 text-neutral-300"
+                    s.status === "failed" ? "bg-error text-error-content" :
+                    "bg-base-300 text-base-content/80"
                   }`}>
                     {s.status === "succeeded" ? "✓ Done" :
                      s.status === "running" ? "Running..." :
@@ -1753,14 +1753,14 @@ export default function BloodHoundImport() {
         {/* STEP 6: Complete */}
         {step === "complete" && (
           <div className="form-section text-center py-12">
-            <div className="w-20 h-20 mx-auto bg-blue-500/20 rounded-full flex items-center justify-center mb-6">
-              <span className="text-4xl text-blue-400">✓</span>
+            <div className="w-20 h-20 mx-auto bg-primary/20 rounded-full flex items-center justify-center mb-6">
+              <span className="text-4xl text-primary">✓</span>
             </div>
-            <h2 className="text-2xl font-bold text-neutral-100 mb-4">Environment Ready!</h2>
-            <p className="text-neutral-400 mb-4">
+            <h2 className="text-2xl font-bold text-base-content mb-4">Environment Ready!</h2>
+            <p className="text-base-content/60 mb-4">
               Your BloodHound replica environment has been deployed and configured successfully.
             </p>
-            <p className="text-blue-400 mb-8 animate-pulse">
+            <p className="text-primary mb-8 animate-pulse">
               Redirecting to your environment...
             </p>
             <div className="flex justify-center gap-4">

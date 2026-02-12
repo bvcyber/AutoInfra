@@ -49,7 +49,7 @@ interface TopologyNode {
 const DomainControllerNode = ({ data }: { data: any }) => (
   <div
     className={`p-4 rounded-xl shadow-2xl relative border backdrop-blur-sm ${
-      data.hasPublicIP ? "ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-900" : ""
+      data.hasPublicIP ? "ring-2 ring-accent ring-offset-2 ring-offset-base-100" : ""
     } ${
       data.isSub
         ? "bg-gradient-to-br from-purple-600 to-violet-700 shadow-purple-900/50 border-purple-500/30"
@@ -100,7 +100,7 @@ const DomainControllerNode = ({ data }: { data: any }) => (
 
 const WorkstationNode = ({ data }: { data: any }) => (
   <div className={`bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 rounded-xl shadow-2xl shadow-emerald-900/50 relative border border-emerald-500/30 backdrop-blur-sm ${
-    data.hasPublicIP ? "ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-900" : ""
+    data.hasPublicIP ? "ring-2 ring-accent ring-offset-2 ring-offset-base-100" : ""
   }`}>
     {data.hasPublicIP && (
       <div className="absolute -top-2 -left-2 bg-cyan-400 text-black rounded-full px-2 py-0.5 text-xs font-bold">
@@ -174,7 +174,7 @@ const JumpboxNode = ({ data }: { data: any }) => (
 
 const CertificateAuthorityNode = ({ data }: { data: any }) => (
   <div className={`bg-gradient-to-br from-yellow-500 to-amber-600 text-white p-4 rounded-xl shadow-2xl shadow-yellow-900/50 relative border border-yellow-400/30 backdrop-blur-sm ${
-    data.hasPublicIP ? "ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-900" : ""
+    data.hasPublicIP ? "ring-2 ring-accent ring-offset-2 ring-offset-base-100" : ""
   }`}>
     {data.hasPublicIP && (
       <div className="absolute -top-2 -left-2 bg-cyan-400 text-black rounded-full px-2 py-0.5 text-xs font-bold">
@@ -413,12 +413,12 @@ const TopologyVisualization: React.FC<TopologyVisualizationProps> = ({
   
   if (loading) return <div className="text-center">Loading topology...</div>;
   
-  if (error) return <div className="text-center text-red-500">{error}</div>;
+  if (error) return <div className="text-center text-error">{error}</div>;
   
   if (nodes.length === 0) return <div className="text-center">No topology data available</div>;
   
   return (
-    <div style={containerStyle} className="border border-gray-700 rounded overflow-hidden">
+    <div style={containerStyle} className="border border-base-300 rounded overflow-hidden">
       <ReactFlow
         nodes={nodes}
         edges={edges}

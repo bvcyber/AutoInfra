@@ -1091,20 +1091,20 @@ export default function InfoAndConfig({
                                   key={`progress-${key}-${disclosureResetKey}`}
                                 >
                                   {({ open }) => (
-                                    <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
-                                      <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-700 transition-colors bg-yellow-900/20 border-b border-yellow-700/30">
+                                    <div className="bg-base-200 rounded-lg border border-base-300 overflow-hidden">
+                                      <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-base-300 transition-colors bg-warning/20 border-b border-warning/30">
                                         <div className="text-left">
                                           <div className="flex items-center gap-2">
-                                            <h2 className="text-base font-semibold text-yellow-300">
+                                            <h2 className="text-base font-semibold text-warning">
                                               {value.title}
                                             </h2>
-                                            <span className="text-xs text-yellow-400 animate-pulse">
+                                            <span className="text-xs text-warning animate-pulse">
                                               In Progress
                                             </span>
                                           </div>
                                           {value.instances &&
                                             value.instances.length > 0 && (
-                                              <p className="text-xs text-yellow-400/80 mt-1">
+                                              <p className="text-xs text-warning/80 mt-1">
                                                 {value.instances
                                                   .map((inst) => {
                                                     const userDisplay =
@@ -1128,7 +1128,7 @@ export default function InfoAndConfig({
                                             )}
                                         </div>
                                         <svg
-                                          className={`w-5 h-5 text-yellow-400 transition-transform ${
+                                          className={`w-5 h-5 text-warning transition-transform ${
                                             open ? "rotate-180" : ""
                                           }`}
                                           fill="none"
@@ -1143,13 +1143,13 @@ export default function InfoAndConfig({
                                           />
                                         </svg>
                                       </DisclosureButton>
-                                      <DisclosurePanel className="px-6 py-4 bg-slate-900/50">
-                                        <div className="text-slate-300 text-sm">
+                                      <DisclosurePanel className="px-6 py-4 bg-base-100/50">
+                                        <div className="text-base-content/80 text-sm">
                                           {value.info}
                                           {value.instances &&
                                             value.instances.length > 0 && (
                                               <div className="mt-3">
-                                                <strong className="text-slate-200">
+                                                <strong className="text-base-content/80">
                                                   Targets:
                                                 </strong>
                                                 <ul className="list-disc list-inside mt-1">
@@ -1184,11 +1184,11 @@ export default function InfoAndConfig({
                         <h1 className="heading-sm mb-4">Enabled Attacks</h1>
                         {enabledAttacks === "Could not get enabled attacks" ||
                         enabledAttacks === "Could not load deployment" ? (
-                          <p className="text-red-400 text-sm">
+                          <p className="text-error text-sm">
                             No attacks enabled
                           </p>
                         ) : Object.keys(enabledAttacks).length === 0 ? (
-                          <p className="text-slate-400 text-sm">
+                          <p className="text-base-content/60 text-sm">
                             No attacks enabled yet
                           </p>
                         ) : (
@@ -1199,20 +1199,20 @@ export default function InfoAndConfig({
                                   key={`enabled-${key}-${disclosureResetKey}`}
                                 >
                                   {({ open }) => (
-                                    <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
-                                      <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-700 transition-colors">
+                                    <div className="bg-base-200 rounded-lg border border-base-300 overflow-hidden">
+                                      <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-base-300 transition-colors">
                                         <div className="text-left">
                                           <div className="flex items-center gap-2">
-                                            <h2 className="text-base font-semibold text-slate-50">
+                                            <h2 className="text-base font-semibold text-base-content">
                                               {value.title}
                                             </h2>
-                                            <span className="text-xs text-green-400">
+                                            <span className="text-xs text-success">
                                               Enabled
                                             </span>
                                           </div>
                                           {value.instances &&
                                             value.instances.length > 0 && (
-                                              <p className="text-xs text-slate-400 mt-1">
+                                              <p className="text-xs text-base-content/60 mt-1">
                                                 {value.instances
                                                   .map((inst) => {
                                                     const userDisplay =
@@ -1236,7 +1236,7 @@ export default function InfoAndConfig({
                                             )}
                                         </div>
                                         <svg
-                                          className={`w-5 h-5 text-slate-400 transition-transform ${
+                                          className={`w-5 h-5 text-base-content/60 transition-transform ${
                                             open ? "rotate-180" : ""
                                           }`}
                                           fill="none"
@@ -1251,13 +1251,13 @@ export default function InfoAndConfig({
                                           />
                                         </svg>
                                       </DisclosureButton>
-                                      <DisclosurePanel className="px-6 py-4 bg-slate-900/50">
-                                        <div className="text-slate-300 text-sm">
+                                      <DisclosurePanel className="px-6 py-4 bg-base-100/50">
+                                        <div className="text-base-content/80 text-sm">
                                           {value.info}
                                           {value.instances &&
                                             value.instances.length > 0 && (
                                               <div className="mt-3">
-                                                <strong className="text-slate-200">
+                                                <strong className="text-base-content/80">
                                                   Enabled for:
                                                 </strong>
                                                 <ul className="list-disc list-inside mt-1">
@@ -1293,7 +1293,7 @@ export default function InfoAndConfig({
                         )}
                       </div>
                       <h1 className="heading-sm mb-4">Applicable Attacks</h1>
-                      <p className="text-xs italic text-slate-400 mb-4">
+                      <p className="text-xs italic text-base-content/60 mb-4">
                         Note: Modifying, enabling, or disabling attacks manually outside of Auto Infra will not be reflected in Auto Infra's tracking.
                       </p>
                       <div className="space-y-3">
@@ -1302,17 +1302,17 @@ export default function InfoAndConfig({
                             <Disclosure key={`${key}-${disclosureResetKey}`}>
                               {({ open }) => (
                                 <div
-                                  className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden"
+                                  className="bg-base-200 rounded-lg border border-base-300 overflow-hidden"
                                   key={key}
                                 >
                                   <div className="flex items-center gap-3">
                                     <div className="flex-1">
-                                      <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-700 transition-colors">
-                                        <h2 className="text-base font-semibold text-slate-50">
+                                      <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-base-300 transition-colors">
+                                        <h2 className="text-base font-semibold text-base-content">
                                           {value.title}
                                         </h2>
                                         <svg
-                                          className={`w-5 h-5 text-slate-400 transition-transform ${
+                                          className={`w-5 h-5 text-base-content/60 transition-transform ${
                                             open ? "rotate-180" : ""
                                           }`}
                                           fill="none"
@@ -1330,7 +1330,7 @@ export default function InfoAndConfig({
                                     </div>
                                     <input
                                       type="checkbox"
-                                      className="checkbox border-slate-50 [--chkbg:theme(colors.red.900)] checkbox-sm mr-4"
+                                      className="checkbox checkbox-primary border-base-content checkbox-sm mr-4"
                                       checked={checkboxStates[key]}
                                       disabled={
                                         pageLocation === "DEPLOY" ||
@@ -1340,15 +1340,15 @@ export default function InfoAndConfig({
                                       onChange={() => handleCheckboxChange(key)}
                                     />
                                   </div>
-                                  <DisclosurePanel className="px-6 py-4 bg-slate-900/50">
-                                    <div className="text-slate-300 text-sm">
+                                  <DisclosurePanel className="px-6 py-4 bg-base-100/50">
+                                    <div className="text-base-content/80 text-sm">
                                       {value.info}
                                       {value.requiresUser &&
                                         pageLocation !== "DEPLOY" &&
                                         pageLocation !== "LOAD_DEPLOYMENT" && (
                                           <>
                                             <div className="mb-4">
-                                              <label className="block text-slate-200 font-semibold text-sm mb-2">
+                                              <label className="block text-base-content/80 font-semibold text-sm mb-2">
                                                 Target User:
                                               </label>
                                               {availableUsers.length > 0 ? (
@@ -1360,7 +1360,7 @@ export default function InfoAndConfig({
                                                       [key]: e.target.value,
                                                     })
                                                   }
-                                                  className="select select-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                                  className="select select-bordered w-full bg-base-200 border-base-300 text-white"
                                                   required
                                                 >
                                                   <option value="">
@@ -1393,7 +1393,7 @@ export default function InfoAndConfig({
                                             </div>
                                             {value.requiresTargetBox && (
                                               <div className="mb-4">
-                                                <label className="block text-slate-200 font-semibold text-sm mb-2">
+                                                <label className="block text-base-content/80 font-semibold text-sm mb-2">
                                                   Target Machine:
                                                 </label>
                                                 {availableMachines.length >
@@ -1408,7 +1408,7 @@ export default function InfoAndConfig({
                                                         [key]: e.target.value,
                                                       })
                                                     }
-                                                    className="select select-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                                    className="select select-bordered w-full bg-base-200 border-base-300 text-white"
                                                     required
                                                   >
                                                     <option value="">
@@ -1438,7 +1438,7 @@ export default function InfoAndConfig({
                                             )}
                                             {value.requiresSingleUserPassword && (
                                               <div className="mb-4">
-                                                <label className="block text-slate-200 font-semibold text-sm mb-2">
+                                                <label className="block text-base-content/80 font-semibold text-sm mb-2">
                                                   Single User Password:
                                                 </label>
                                                 <input
@@ -1453,7 +1453,7 @@ export default function InfoAndConfig({
                                                       [key]: e.target.value,
                                                     })
                                                   }
-                                                  className="input input-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                                  className="input input-bordered w-full bg-base-200 border-base-300 text-white"
                                                   required
                                                 />
                                               </div>
@@ -1465,7 +1465,7 @@ export default function InfoAndConfig({
                                         pageLocation !== "LOAD_DEPLOYMENT" && (
                                           <>
                                             <div className="mb-4">
-                                              <label className="block text-slate-200 font-semibold text-sm mb-2">
+                                              <label className="block text-base-content/80 font-semibold text-sm mb-2">
                                                 Granting User (gets
                                                 permissions):
                                               </label>
@@ -1480,7 +1480,7 @@ export default function InfoAndConfig({
                                                       [key]: e.target.value,
                                                     })
                                                   }
-                                                  className="select select-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                                  className="select select-bordered w-full bg-base-200 border-base-300 text-white"
                                                   required
                                                 >
                                                   <option value="">
@@ -1513,7 +1513,7 @@ export default function InfoAndConfig({
                                             </div>
                                             {value.requiresReceivingUser && (
                                               <div className="mb-4">
-                                                <label className="block text-slate-200 font-semibold text-sm mb-2">
+                                                <label className="block text-base-content/80 font-semibold text-sm mb-2">
                                                   Receiving User (grants
                                                   permissions):
                                                 </label>
@@ -1528,7 +1528,7 @@ export default function InfoAndConfig({
                                                         [key]: e.target.value,
                                                       })
                                                     }
-                                                    className="select select-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                                    className="select select-bordered w-full bg-base-200 border-base-300 text-white"
                                                     required
                                                   >
                                                     <option value="">
@@ -1601,8 +1601,8 @@ export default function InfoAndConfig({
                 <div className="tab-panel-scrollable">
                   {/* Existing Users Panel */}
                   {availableUsers.length > 0 && (
-                    <div className="bg-slate-800 rounded-lg border border-slate-700 p-5 mb-6">
-                      <h3 className="text-lg font-semibold text-slate-50 mb-3">
+                    <div className="bg-base-200 rounded-lg border border-base-300 p-5 mb-6">
+                      <h3 className="text-lg font-semibold text-base-content mb-3">
                         Existing Users ({availableUsers.length})
                       </h3>
                       <div className="max-h-48 overflow-y-auto">
@@ -1627,7 +1627,7 @@ export default function InfoAndConfig({
                           }, {} as Record<string, string[]>)
                         ).map(([domain, users]) => (
                           <div key={domain} className="mb-4 last:mb-0">
-                            <div className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                            <div className="text-xs font-semibold text-base-content/60 mb-2 uppercase tracking-wider">
                               {domain}
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -1636,10 +1636,10 @@ export default function InfoAndConfig({
                                 return (
                                   <div
                                     key={`${domain}-${username}`}
-                                    className="bg-slate-900/50 border border-slate-700 rounded px-3 py-2 text-center"
+                                    className="bg-base-100/50 border border-base-300 rounded px-3 py-2 text-center"
                                     title={`${username}@${domain}`}
                                   >
-                                    <div className="text-sm text-slate-300 font-mono">
+                                    <div className="text-sm text-base-content/80 font-mono">
                                       {username}
                                     </div>
                                   </div>
@@ -1660,8 +1660,8 @@ export default function InfoAndConfig({
                       disabled={isSyncingUsers}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         isSyncingUsers
-                          ? "bg-slate-600 text-slate-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
+                          ? "bg-base-300 text-base-content/60 cursor-not-allowed"
+                          : "bg-primary text-white hover:bg-primary/90"
                       }`}
                       title="Query all domain controllers to sync users from Active Directory"
                     >
@@ -1688,19 +1688,19 @@ export default function InfoAndConfig({
                   <div className="space-y-4">
                     <Disclosure>
                       {({ open }) => (
-                        <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
-                          <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-700 transition-colors">
+                        <div className="bg-base-200 rounded-lg border border-base-300 overflow-hidden">
+                          <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-base-300 transition-colors">
                             <div className="text-left">
-                              <h2 className="text-lg font-semibold text-slate-50">
+                              <h2 className="text-lg font-semibold text-base-content">
                                 Generate Fixed Users
                               </h2>
-                              <p className="text-sm text-slate-400 mt-0.5">
+                              <p className="text-sm text-base-content/60 mt-0.5">
                                 Creates 25 preset users (User1-User24 and
                                 EntryUser)
                               </p>
                             </div>
                             <svg
-                              className={`w-5 h-5 text-slate-400 transition-transform ${
+                              className={`w-5 h-5 text-base-content/60 transition-transform ${
                                 open ? "rotate-180" : ""
                               }`}
                               fill="none"
@@ -1717,15 +1717,15 @@ export default function InfoAndConfig({
                           </DisclosureButton>
                           <DisclosurePanel className="px-6 pb-6">
                             {activeOperationId?.startsWith("fixed-") ? (
-                              <div className="bg-slate-900/50 rounded-lg border border-slate-700 p-4">
-                                <div className="flex items-center justify-between p-3 rounded bg-yellow-900/20 border border-yellow-700/30">
-                                  <span className="text-sm font-mono text-yellow-300">
+                              <div className="bg-base-100/50 rounded-lg border border-base-300 p-4">
+                                <div className="flex items-center justify-between p-3 rounded bg-warning/20 border border-warning/30">
+                                  <span className="text-sm font-mono text-warning">
                                     Generating fixed users in{" "}
                                     {selectedDomain?.domainName ||
                                       "root domain"}
                                     ...
                                   </span>
-                                  <span className="text-xs text-yellow-400 animate-pulse">
+                                  <span className="text-xs text-warning animate-pulse">
                                     In Progress
                                   </span>
                                 </div>
@@ -1737,7 +1737,7 @@ export default function InfoAndConfig({
                               >
                                 {availableDomains.length > 1 && (
                                   <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                                    <label className="block text-sm font-medium text-base-content/80 mb-2">
                                       Target Domain
                                     </label>
                                     <select
@@ -1753,7 +1753,7 @@ export default function InfoAndConfig({
                                           })
                                         }
                                       }}
-                                      className="select select-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                      className="select select-bordered w-full bg-base-200 border-base-300 text-white"
                                     >
                                       {availableDomains.map((domain) => (
                                         <option
@@ -1770,7 +1770,7 @@ export default function InfoAndConfig({
                                 <div className="flex justify-center">
                                   <button
                                     type="submit"
-                                    className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                    className="mt-2 bg-primary hover:bg-primary/90 text-white font-medium py-2.5 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
                                   >
                                     Generate Fixed Users
                                   </button>
@@ -1784,18 +1784,18 @@ export default function InfoAndConfig({
 
                     <Disclosure>
                       {({ open }) => (
-                        <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
-                          <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-700 transition-colors">
+                        <div className="bg-base-200 rounded-lg border border-base-300 overflow-hidden">
+                          <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-base-300 transition-colors">
                             <div className="text-left">
-                              <h2 className="text-lg font-semibold text-slate-50">
+                              <h2 className="text-lg font-semibold text-base-content">
                                 Create Single User
                               </h2>
-                              <p className="text-sm text-slate-400 mt-0.5">
+                              <p className="text-sm text-base-content/60 mt-0.5">
                                 Create a custom user with your own credentials
                               </p>
                             </div>
                             <svg
-                              className={`w-5 h-5 text-slate-400 transition-transform ${
+                              className={`w-5 h-5 text-base-content/60 transition-transform ${
                                 open ? "rotate-180" : ""
                               }`}
                               fill="none"
@@ -1812,15 +1812,15 @@ export default function InfoAndConfig({
                           </DisclosureButton>
                           <DisclosurePanel className="px-6 pb-6">
                             {activeOperationId?.startsWith("single-") ? (
-                              <div className="bg-slate-900/50 rounded-lg border border-slate-700 p-4">
-                                <div className="flex items-center justify-between p-3 rounded bg-yellow-900/20 border border-yellow-700/30">
-                                  <span className="text-sm font-mono text-yellow-300">
+                              <div className="bg-base-100/50 rounded-lg border border-base-300 p-4">
+                                <div className="flex items-center justify-between p-3 rounded bg-warning/20 border border-warning/30">
+                                  <span className="text-sm font-mono text-warning">
                                     Creating user '{singleUsername}' in{" "}
                                     {selectedDomain?.domainName ||
                                       "root domain"}
                                     ...
                                   </span>
-                                  <span className="text-xs text-yellow-400 animate-pulse">
+                                  <span className="text-xs text-warning animate-pulse">
                                     In Progress
                                   </span>
                                 </div>
@@ -1832,7 +1832,7 @@ export default function InfoAndConfig({
                               >
                                 {availableDomains.length > 1 && (
                                   <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                                    <label className="block text-sm font-medium text-base-content/80 mb-2">
                                       Target Domain
                                     </label>
                                     <select
@@ -1848,7 +1848,7 @@ export default function InfoAndConfig({
                                           })
                                         }
                                       }}
-                                      className="select select-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                      className="select select-bordered w-full bg-base-200 border-base-300 text-white"
                                     >
                                       {availableDomains.map((domain) => (
                                         <option
@@ -1863,7 +1863,7 @@ export default function InfoAndConfig({
                                   </div>
                                 )}
                                 <div>
-                                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                                  <label className="block text-sm font-medium text-base-content/80 mb-2">
                                     Username
                                   </label>
                                   <input
@@ -1872,13 +1872,13 @@ export default function InfoAndConfig({
                                     onChange={(e) =>
                                       setsingleUsername(e.target.value)
                                     }
-                                    className="input input-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                    className="input input-bordered w-full bg-base-200 border-base-300 text-white"
                                     placeholder="Enter username"
                                     required
                                   />
                                 </div>
                                 <div>
-                                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                                  <label className="block text-sm font-medium text-base-content/80 mb-2">
                                     Password
                                   </label>
                                   <input
@@ -1889,7 +1889,7 @@ export default function InfoAndConfig({
                                         e.target.value
                                       )
                                     }
-                                    className="input input-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                    className="input input-bordered w-full bg-base-200 border-base-300 text-white"
                                     placeholder="Enter password"
                                     required
                                   />
@@ -1897,7 +1897,7 @@ export default function InfoAndConfig({
                                 <div className="flex justify-center">
                                   <button
                                     type="submit"
-                                    className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                    className="mt-2 bg-primary hover:bg-primary/90 text-white font-medium py-2.5 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
                                   >
                                     Create Single User
                                   </button>
@@ -1911,19 +1911,19 @@ export default function InfoAndConfig({
 
                     <Disclosure>
                       {({ open }) => (
-                        <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
-                          <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-700 transition-colors">
+                        <div className="bg-base-200 rounded-lg border border-base-300 overflow-hidden">
+                          <DisclosureButton className="w-full px-6 py-4 flex items-center justify-between hover:bg-base-300 transition-colors">
                             <div className="text-left">
-                              <h2 className="text-lg font-semibold text-slate-50">
+                              <h2 className="text-lg font-semibold text-base-content">
                                 Generate Random Users
                               </h2>
-                              <p className="text-sm text-slate-400 mt-0.5">
+                              <p className="text-sm text-base-content/60 mt-0.5">
                                 Create a specified number of randomly generated
                                 users
                               </p>
                             </div>
                             <svg
-                              className={`w-5 h-5 text-slate-400 transition-transform ${
+                              className={`w-5 h-5 text-base-content/60 transition-transform ${
                                 open ? "rotate-180" : ""
                               }`}
                               fill="none"
@@ -1940,15 +1940,15 @@ export default function InfoAndConfig({
                           </DisclosureButton>
                           <DisclosurePanel className="px-6 pb-6">
                             {activeOperationId?.startsWith("random-") ? (
-                              <div className="bg-slate-900/50 rounded-lg border border-slate-700 p-4">
-                                <div className="flex items-center justify-between p-3 rounded bg-yellow-900/20 border border-yellow-700/30">
-                                  <span className="text-sm font-mono text-yellow-300">
+                              <div className="bg-base-100/50 rounded-lg border border-base-300 p-4">
+                                <div className="flex items-center justify-between p-3 rounded bg-warning/20 border border-warning/30">
+                                  <span className="text-sm font-mono text-warning">
                                     Generating {numberOfUsers} random users in{" "}
                                     {selectedDomain?.domainName ||
                                       "root domain"}
                                     ...
                                   </span>
-                                  <span className="text-xs text-yellow-400 animate-pulse">
+                                  <span className="text-xs text-warning animate-pulse">
                                     In Progress
                                   </span>
                                 </div>
@@ -1960,7 +1960,7 @@ export default function InfoAndConfig({
                               >
                                 {availableDomains.length > 1 && (
                                   <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                                    <label className="block text-sm font-medium text-base-content/80 mb-2">
                                       Target Domain
                                     </label>
                                     <select
@@ -1976,7 +1976,7 @@ export default function InfoAndConfig({
                                           })
                                         }
                                       }}
-                                      className="select select-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                      className="select select-bordered w-full bg-base-200 border-base-300 text-white"
                                     >
                                       {availableDomains.map((domain) => (
                                         <option
@@ -1991,7 +1991,7 @@ export default function InfoAndConfig({
                                   </div>
                                 )}
                                 <div>
-                                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                                  <label className="block text-sm font-medium text-base-content/80 mb-2">
                                     Username Format
                                   </label>
                                   <select
@@ -1999,7 +1999,7 @@ export default function InfoAndConfig({
                                     onChange={(e) =>
                                       setUsernameFormat(e.target.value)
                                     }
-                                    className="select select-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                    className="select select-bordered w-full bg-base-200 border-base-300 text-white"
                                     required
                                   >
                                     <option value="firstname">
@@ -2014,7 +2014,7 @@ export default function InfoAndConfig({
                                   </select>
                                 </div>
                                 <div>
-                                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                                  <label className="block text-sm font-medium text-base-content/80 mb-2">
                                     Number of Users
                                   </label>
                                   <input
@@ -2025,7 +2025,7 @@ export default function InfoAndConfig({
                                     onChange={(e) =>
                                       setnumberOfUsers(e.target.value)
                                     }
-                                    className="input input-bordered w-full bg-slate-800 border-slate-600 text-white"
+                                    className="input input-bordered w-full bg-base-200 border-base-300 text-white"
                                     placeholder="e.g. 10"
                                     required
                                   />
@@ -2033,7 +2033,7 @@ export default function InfoAndConfig({
                                 <div className="flex justify-center">
                                   <button
                                     type="submit"
-                                    className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                    className="mt-2 bg-primary hover:bg-primary/90 text-white font-medium py-2.5 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
                                   >
                                     Generate Random Users
                                   </button>
@@ -2050,7 +2050,7 @@ export default function InfoAndConfig({
                   <Disclosure>
                     <DisclosureButton className="w-full">
                       <div className="label base-button w-[95%]">
-                        <span className="text-neutral-50">Fixed CTF 1</span>
+                        <span className="text-base-content">Fixed CTF 1</span>
                       </div>
                     </DisclosureButton>
                     <DisclosurePanel className="info-and-config-configuration-panel">
@@ -2064,7 +2064,7 @@ export default function InfoAndConfig({
                       </p>
                       <form onSubmit={handleFixedCtfSubmit}>
                         <div className="mb-4">
-                          <label className="block text-neutral-50 font-bold mb-2">
+                          <label className="block text-base-content font-bold mb-2">
                             Target Box to Run this on (Recommended to run on
                             workstation: EntryPoint):
                           </label>
@@ -2072,7 +2072,7 @@ export default function InfoAndConfig({
                             type="text"
                             value={targetBoxForCtf}
                             onChange={(e) => setTargetBoxForCtf(e.target.value)}
-                            className="bg-neutral-800 text-neutral-50 border border-neutral-700 rounded w-full py-2 px-3"
+                            className="bg-base-200 text-base-content border border-base-300 rounded w-full py-2 px-3"
                             required
                           />
                         </div>
@@ -2091,7 +2091,7 @@ export default function InfoAndConfig({
                   <Disclosure>
                     <DisclosureButton className="w-full">
                       <div className="label base-button w-[95%]">
-                        <span className="text-neutral-50">Random CTF</span>
+                        <span className="text-base-content">Random CTF</span>
                       </div>
                     </DisclosureButton>
                     <DisclosurePanel className="info-and-config-configuration-panel">
@@ -2104,7 +2104,7 @@ export default function InfoAndConfig({
                       </p>
                       <form onSubmit={handleRandomCtfSubmit}>
                         <div className="mb-4">
-                          <label className="block text-neutral-50 font-bold mb-2">
+                          <label className="block text-base-content font-bold mb-2">
                             Target Box to Run this on (Recommended to run on
                             workstation: EntryPoint):
                           </label>
@@ -2112,30 +2112,30 @@ export default function InfoAndConfig({
                             type="text"
                             value={targetBoxForCtf}
                             onChange={(e) => setTargetBoxForCtf(e.target.value)}
-                            className="bg-neutral-800 text-neutral-50 border border-neutral-700 rounded w-full py-2 px-3"
+                            className="bg-base-200 text-base-content border border-base-300 rounded w-full py-2 px-3"
                             required
                           />
                         </div>
                         <div className="mb-4">
-                          <label className="block text-neutral-50 font-bold mb-2">
+                          <label className="block text-base-content font-bold mb-2">
                             Number of Users:
                           </label>
                           <input
                             type="text"
                             value={numberOfUsers}
                             onChange={(e) => setnumberOfUsers(e.target.value)}
-                            className="bg-neutral-800 text-neutral-50 border border-neutral-700 rounded w-full py-2 px-3"
+                            className="bg-base-200 text-base-content border border-base-300 rounded w-full py-2 px-3"
                             required
                           />
                         </div>
                         <div className="mb-4">
-                          <label className="block text-neutral-50 font-bold mb-2">
+                          <label className="block text-base-content font-bold mb-2">
                             Difficulty:
                           </label>
                           <select
                             value={difficulty}
                             onChange={(e) => setDifficulty(e.target.value)}
-                            className="bg-neutral-800 text-neutral-50 border border-neutral-700 rounded w-full py-2 px-3"
+                            className="bg-base-200 text-base-content border border-base-300 rounded w-full py-2 px-3"
                             required
                           >
                             <option value="">Select Difficulty</option>

@@ -53,7 +53,7 @@ const faqItems = [
 export default function Page() {
   return (
     <div className="pl-5 pr-5 w-[100%] min-w-[20rem] flex flex-col max-h-[55rem] overflow-y-auto">
-      <div className="text-neutral-50 text-2xl font-extrabold text-left">
+      <div className="text-base-content text-2xl font-extrabold text-left">
         FAQ
       </div>
       <br />
@@ -62,14 +62,14 @@ export default function Page() {
           {({ open }) => (
             <>
               <DisclosureButton className="">
-                <div className="label border-4 border-double border-black w-[100%]">
-                  <span className="text-neutral-50 text-lg font-extrabold">
+                <div className="label border-4 border-double border-base-300 w-[100%]">
+                  <span className="text-base-content text-lg font-extrabold">
                     {item.question}
                   </span>
                   <span>{open ? "−" : "+"}</span>
                 </div>
               </DisclosureButton>
-              <DisclosurePanel className="pt-4 pb-2 text-neutral-50">
+              <DisclosurePanel className="pt-4 pb-2 text-base-content">
                 <p>{item.answer}</p>
                 {item.imgSrc && (
                   <div className="relative w-full overflow-hidden mt-2">
