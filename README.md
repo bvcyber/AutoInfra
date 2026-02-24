@@ -1,15 +1,23 @@
-# Auto Infra
+<div align="center">
 
-**Created by Fabian Vilela and Jay Turner**
+  <img src="https://github.com/bvcyber.png" alt="Bureau Veritas" width="64" />
 
-*Developed during employment at BV Cyber*
+  # Auto Infra
 
-> Automated deployment and management platform for vulnerable Active Directory environments on Azure
+  > Automated deployment and management platform for vulnerable Active Directory environments on Azure
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
 [![Flask](https://img.shields.io/badge/Flask-2.x-lightgrey)](https://flask.palletsprojects.com/)
 [![Azure](https://img.shields.io/badge/Azure-Bicep-blue)](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)
+
+  [Docs](#) · [Report an Issue](issues)
+
+</div>
+
+**Created by Fabian Vilela and Jay Turner**
+
+*Developed during employment at BV Cyber*
 
 > **WARNING**: This platform deploys intentionally vulnerable Active Directory environments. It is designed for **authorized security testing, training, and research only**. Do not deploy in production environments. Do not expose deployed resources to the internet beyond the auto-configured NSG rules. Users are solely responsible for ensuring compliance with all applicable laws and organizational policies.
 >
@@ -220,3 +228,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **See [USAGE.md](USAGE.md) for the complete usage guide.**
+
+
+
+<div align="center">
+
+  Maintained by [Bureau Veritas](https://cybersecurity.bureauveritas.com/)
+
+</div>
