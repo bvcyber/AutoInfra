@@ -40,6 +40,8 @@
 
 Auto Infra is an infrastructure management platform designed to rapidly deploy, configure, and manage vulnerable Active Directory environments in Azure. Built for security professionals, red teamers, and penetration testers, it provides an intuitive web interface to spin up realistic attack scenarios with pre-configured vulnerabilities, automated user generation, and integrated attack path management.
 
+Overview Video: https://www.youtube.com/watch?v=Fl3kPoYPZ98
+
 ### Who Is This For?
 
 - **Security Training**: Hands-on learning environment for Active Directory attack vectors and defensive techniques
